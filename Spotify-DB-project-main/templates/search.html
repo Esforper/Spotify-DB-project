@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Search{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">Search Page</h1>
+    <form class="mt-3">
+        <div class="mb-3">
+            <label for="searchInput" class="form-label">Search</label>
+            <input type="text" class="form-control" id="searchInput" placeholder="Type your query...">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+{% endblock %}
