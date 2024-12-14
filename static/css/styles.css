@@ -1,0 +1,23 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f5f5; /* Light background */
+    margin: 0;
+}
+
+.card {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    border: none;
+}
+
+.form-control:focus {
+    border-color: #1DB954;
+    box-shadow: 0 0 5px #1DB954;
+}
+
+.btn-success:hover {
+    background-color: #1ed760;
+}
+
+a.text-success:hover {
+    text-decoration: underline;
+}
