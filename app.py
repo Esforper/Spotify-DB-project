@@ -1,78 +1,87 @@
-from flask import Flask, render_template, request, redirect, session, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session
 
 # Flask uygulamasını oluştur
 app = Flask(__name__)
-app.secret_key = "your_secret_key"  # For session management
+app.secret_key = 'your_secret_key_here'  # Make sure to set a secret key for sessions
 
-# Root route
+# Temporary users store (for testing purposes)
+valid_users = {
+    "admin": {"password": "password", "role": "Admin"},
+    "user1": {"password": "pass123", "role": "User"},
+    "emir": {"password": "mypassword", "role": "User"}
+}
+
+# Home Route (Library page)
 @app.route('/')
-def index():
-    # Redirect to login if not logged in
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-    return redirect(url_for('library'))  # If logged in, go to the library
+def home():
+    if 'logged_in' in session:
+        return redirect(url_for('library'))
+    return redirect(url_for('login'))
 
-# Login page
+# Login Route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # Example credentials for testing
-    valid_users = {
-        "admin": "password",
-        "user1": "pass123",
-        "emir": "mypassword"
-    }
-
     if request.method == 'POST':
-        # Retrieve form data
         username = request.form['username']
         password = request.form['password']
         role = request.form['role']
 
-        # Validate username and password
-        if username in valid_users and valid_users[username] == password:
+        if username in valid_users and valid_users[username]['password'] == password:
             session['logged_in'] = True
             session['username'] = username
             session['role'] = role
             return redirect(url_for('library'))
         else:
             return render_template('login.html', error="Invalid username or password")
-
     return render_template('login.html')
 
+# Signup Route
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        role = request.form['role']
 
-# Logout page
-@app.route('/logout')
-def logout():
-    session.clear()  # Clear the session
-    return redirect(url_for('login'))
+        # Check if username already exists
+        if username in valid_users:
+            return render_template('signup.html', error="Username already exists")
 
-# Protected routes
+        # Add the new user to the valid_users dictionary
+        valid_users[username] = {"password": password, "role": role}
+        session['logged_in'] = True
+        session['username'] = username
+        session['role'] = role
+        return redirect(url_for('library'))
+
+    return render_template('signup.html')
+
+# Library Route
 @app.route('/library')
 def library():
-    if not session.get('logged_in'):
+    if 'logged_in' not in session:
         return redirect(url_for('login'))
     return render_template('library.html')
 
+# Search Route
 @app.route('/search')
 def search():
-    if not session.get('logged_in'):
+    if 'logged_in' not in session:
         return redirect(url_for('login'))
     return render_template('search.html')
 
+# Profile Route
 @app.route('/profile')
 def profile():
-    if not session.get('logged_in'):
+    if 'logged_in' not in session:
         return redirect(url_for('login'))
     return render_template('profile.html')
 
-# Error handling
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def internal_error(e):
-    return render_template('500.html'), 500
+# Logout Route
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
 
 # Flask uygulamasını çalıştır
 if __name__ == '__main__':
