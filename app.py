@@ -1,16 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from admin.routes import admin_bp
-from user.routes import user_bp
 from artist.routes import artist_bp
+from user.routes import user_bp
 
-# Flask uygulamasını oluştur
+# Initialize Flask app
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Make sure to set a secret key for sessions
+app.secret_key = 'your_secret_key_here'  # Secret key for sessions
 
-# Blueprint'leri kaydet
+# Register Blueprints
 app.register_blueprint(admin_bp, url_prefix='/admin')
-app.register_blueprint(user_bp, url_prefix='/user')
 app.register_blueprint(artist_bp, url_prefix='/artist')
+app.register_blueprint(user_bp, url_prefix='/user')
 
 # Temporary users store (for testing purposes)
 valid_users = {
@@ -19,7 +19,7 @@ valid_users = {
     "emir": {"password": "mypassword", "role": "Artist"}
 }
 
-# Home Route (Library page)
+# Home Route (redirects based on role)
 @app.route('/')
 def home():
     if 'logged_in' in session:
@@ -27,85 +27,60 @@ def home():
         if role == 'Admin':
             return redirect(url_for('admin.dashboard'))
         elif role == 'User':
-            return redirect(url_for('user.profile'))
+            return redirect(url_for('user.home'))
         elif role == 'Artist':
-            return redirect(url_for('artist.gallery'))
+            return redirect(url_for('artist.profile'))
     return redirect(url_for('login'))
 
 # Login Route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        role = request.form['role']
+        username = request.form['username'].strip()
+        password = request.form['password'].strip()
+        role = request.form['role'].strip()
 
-        if username in valid_users and valid_users[username]['password'] == password and valid_users[username]['role'] == role:
-            session['logged_in'] = True
-            session['username'] = username
-            session['role'] = role
-
-            # Kullanıcının rolüne göre yönlendirme
-            if role == "Admin":
-                return redirect(url_for('admin.dashboard'))
-            elif role == "User":
-                return redirect(url_for('user.profile'))
-            elif role == "Artist":
-                return redirect(url_for('artist.gallery'))
-
-        else:
-            return render_template('login.html', error="Invalid username, password, or role")
+        if username in valid_users:
+            user = valid_users[username]
+            if user['password'] == password and user['role'] == role:
+                session['logged_in'] = True
+                session['username'] = username
+                session['role'] = role
+                # Redirect based on role
+                if role == "Admin":
+                    return redirect(url_for('admin.dashboard'))
+                elif role == "User":
+                    return redirect(url_for('user.home'))
+                elif role == "Artist":
+                    return redirect(url_for('artist.profile'))
+        return render_template('login.html', error="Invalid credentials or role")
     return render_template('login.html')
 
-
+# Signup Route
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        role = request.form['role']
+        username = request.form['username'].strip()
+        password = request.form['password'].strip()
+        role = request.form['role'].strip()
 
-        # Kullanıcı adı zaten var mı?
         if username in valid_users:
             return render_template('signup.html', error="Username already exists")
 
-        # Yeni kullanıcıyı ekle
         valid_users[username] = {"password": password, "role": role}
         session['logged_in'] = True
         session['username'] = username
         session['role'] = role
 
-        # Kullanıcının rolüne göre yönlendirme
+        # Redirect based on role
         if role == "Admin":
             return redirect(url_for('admin.dashboard'))
         elif role == "User":
-            return redirect(url_for('user.profile'))
+            return redirect(url_for('user.home'))
         elif role == "Artist":
-            return redirect(url_for('artist.gallery'))
+            return redirect(url_for('artist.profile'))
 
     return render_template('signup.html')
-
-
-# Library Route
-@app.route('/library')
-def library():
-    if 'logged_in' not in session:
-        return redirect(url_for('login'))
-    return render_template('library.html')
-
-# Search Route
-@app.route('/search')
-def search():
-    if 'logged_in' not in session:
-        return redirect(url_for('login'))
-    return render_template('search.html')
-
-# Profile Route
-@app.route('/profile')
-def profile():
-    if 'logged_in' not in session:
-        return redirect(url_for('login'))
-    return render_template('profile.html')
 
 # Logout Route
 @app.route('/logout')
@@ -113,6 +88,6 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-# Flask uygulamasını çalıştır
+# Run the Flask app
 if __name__ == '__main__':
     app.run(debug=True)
