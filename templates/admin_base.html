@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Panel{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="admin-sidebar">
+        <!-- Logo -->
+        <div class="admin-sidebar__logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+        </div>
+
+        <!-- Navigation -->
+        <ul class="admin-sidebar__nav">
+            <li>
+                <a href="{{ url_for('admin.dashboard') }}" class="admin-sidebar__link {% if request.path == url_for('admin.dashboard') %}admin-sidebar__link--active{% endif %}">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin.search') }}" class="admin-sidebar__link {% if request.path == url_for('admin.search') %}admin-sidebar__link--active{% endif %}">
+                    <i class="fas fa-search"></i> Search Users
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin.add_role') }}" class="admin-sidebar__link {% if request.path == url_for('admin.add_role') %}admin-sidebar__link--active{% endif %}">
+                    <i class="fas fa-user-plus"></i> Add Role
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin.delete_role') }}" class="admin-sidebar__link {% if request.path == url_for('admin.delete_role') %}admin-sidebar__link--active{% endif %}">
+                    <i class="fas fa-user-minus"></i> Delete Role
+                </a>
+            </li>
+            <!-- Logout -->
+            <li>
+                <a href="{{ url_for('logout') }}" class="admin-sidebar__link text-danger">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        {% block admin_content %}{% endblock %}
+    </main>
+</body>
+</html>

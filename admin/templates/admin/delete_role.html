@@ -1,0 +1,15 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Delete Role{% endblock %}
+
+{% block admin_content %}
+<h2 class="admin-main__title">Delete Role</h2>
+<div class="admin-main__form-container">
+    <label class="admin-main__label" for="delete-username">Username</label>
+    <input type="text" id="delete-username" name="username"
+       class="admin-main__form-control admin-main__form-control--small"
+       placeholder="Enter username" required>
+
+    <button type="submit" class="admin-main__btn admin-main__btn--danger">Delete Role</button>
+</div>
+{% endblock %}

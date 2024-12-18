@@ -1,0 +1,22 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Add Role{% endblock %}
+
+{% block admin_content %}
+<h2 class="admin-main__title">Add Role</h2>
+<div class="admin-main__form-container">
+    <label class="admin-main__label" for="username">Username</label>
+    <input type="text" id="username" name="username"
+       class="admin-main__form-control admin-main__form-control--small"
+       placeholder="Enter username" required>
+
+    <label class="admin-main__label" for="role">Role</label>
+    <select id="role" name="role" class="admin-main__form-control" required>
+        <option value="Admin">Admin</option>
+        <option value="User">User</option>
+        <option value="Artist">Artist</option>
+    </select>
+
+    <button type="submit" class="admin-main__btn">Add Role</button>
+</div>
+{% endblock %}
