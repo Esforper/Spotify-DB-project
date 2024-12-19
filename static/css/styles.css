@@ -196,7 +196,7 @@ a.text-success:hover {
 /* Artist Sidebar Styling */
 .artist-sidebar {
     width: 260px;
-    background-color: #5A189A; /* Deep Purple */
+    background-color: #370169; /* Deep Purple */
     color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -229,7 +229,7 @@ a.text-success:hover {
     display: flex;
     align-items: center;
     padding: 12px 15px;
-    color: #E0AAFF; /* Light Purple */
+    color: #ffffff; /* Light Purple */
     border-radius: 8px;
     text-decoration: none;
     margin-bottom: 5px;
@@ -238,7 +238,7 @@ a.text-success:hover {
 
 .artist-sidebar__link:hover,
 .artist-sidebar__link--active {
-    background-color: #9D4EDD; /* Vibrant Purple */
+    background-color: #552c7e; /* Vibrant Purple */
     color: #ffffff;
     font-weight: bold;
 }
@@ -255,7 +255,7 @@ a.text-success:hover {
 .artist-main {
     margin-left: 260px;
     width: calc(100% - 260px);
-    background: linear-gradient(145deg, #9D4EDD, #7B2CBF); /* Purple Gradient */
+    background: linear-gradient(145deg, #050008, #000000); /* Purple Gradient */
     color: #ffffff;
     height: 100vh;
     padding: 30px;
@@ -271,9 +271,9 @@ a.text-success:hover {
 
 /* Form Styling */
 .artist-main__form-container {
-    background-color: #6A1B9A; /* Dark Purple */
+    background-color: #370169; /* Dark Purple */
     color: #ffffff;
-    border: 1px solid #E0AAFF;
+    border: 1px solid #370169;
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -281,14 +281,14 @@ a.text-success:hover {
 
 .artist-main__form-control {
     background-color: #fff;
-    color: #6A1B9A;
-    border: 1px solid #E0AAFF;
-    border-radius: 6px;
-    padding: 10px;
+    color: #370169;
+    border: 1px solid #370169;
+    border-radius: 8px;
+    padding: 20px;
 }
 
 .artist-main__btn {
-    background-color: #5A189A;
+    background-color: #000000;
     color: #ffffff;
     font-weight: bold;
     padding: 10px 15px;
@@ -298,5 +298,5 @@ a.text-success:hover {
 }
 
 .artist-main__btn:hover {
-    background-color: #9D4EDD;
+    background-color: #370169;
 }
