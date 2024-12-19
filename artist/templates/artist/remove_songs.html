@@ -1,0 +1,33 @@
+{% extends "artist/artist_base.html" %}
+
+{% block title %}Remove Songs/Albums{% endblock %}
+
+{% block content %}
+<h1 class="artist-main__title">Remove Songs/Albums</h1>
+
+<div class="artist-main__form-container">
+    <form method="POST" action="{{ url_for('artist.remove_song') }}">
+        <div class="form-group">
+            <label for="remove_type" class="artist-main__label">Type</label>
+            <select id="remove_type" name="remove_type" class="artist-main__form-control" required>
+                <option value="">Select type</option>
+                <option value="song">Song</option>
+                <option value="album">Album</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="title" class="artist-main__label">Title</label>
+            <input type="text" id="title" name="title" class="artist-main__form-control" placeholder="Enter title of song or album" required>
+        </div>
+
+        <div class="form-group">
+            <label for="confirm" class="artist-main__label">Confirmation</label>
+            <input type="checkbox" id="confirm" name="confirm" class="artist-main__form-control" required>
+            <label for="confirm" style="display:inline; font-size:0.9rem;"> I confirm I want to remove this item.</label>
+        </div>
+
+        <button type="submit" class="artist-main__btn artist-main__btn--danger">Remove</button>
+    </form>
+</div>
+{% endblock %}

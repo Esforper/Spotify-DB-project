@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Artist{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="artist-page">
+    <div class="artist-sidebar">
+        <h2 class="artist-sidebar__logo">Spotify for Artists</h2>
+        <ul class="artist-sidebar__nav">
+            <li><a class="artist-sidebar__link" href="{{ url_for('artist.profile') }}">Profile</a></li>
+            <li><a class="artist-sidebar__link" href="{{ url_for('artist.search') }}">Search</a></li>
+            <li><a class="artist-sidebar__link" href="{{ url_for('artist.add_songs') }}">Add Songs/Albums</a></li>
+            <li><a class="artist-sidebar__link" href="{{ url_for('artist.remove_songs') }}">Remove Songs/Albums</a></li>
+            <li><a class="artist-sidebar__link" href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </div>
+    <div class="artist-main">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

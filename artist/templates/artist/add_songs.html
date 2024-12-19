@@ -1,0 +1,25 @@
+{% extends "artist/artist_base.html" %}
+
+{% block title %}Add Songs/Albums{% endblock %}
+
+{% block content %}
+<div class="artist-main__form-container">
+    <h1 class="artist-main__title">Add Songs/Albums</h1>
+    <form method="POST" class="artist-main__form">
+        <div class="form-group">
+            <label class="artist-main__label" for="name">Name:</label>
+            <input class="artist-main__form-control" type="text" id="name" name="name" placeholder="Enter song or album name" required>
+        </div>
+
+        <div class="form-group">
+            <label class="artist-main__label" for="type">Type:</label>
+            <select class="artist-main__form-control" id="type" name="type" required>
+                <option value="song">Song</option>
+                <option value="album">Album</option>
+            </select>
+        </div>
+
+        <button class="artist-main__btn" type="submit">Add</button>
+    </form>
+</div>
+{% endblock %}

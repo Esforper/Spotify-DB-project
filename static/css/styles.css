@@ -23,7 +23,7 @@ a.text-success:hover {
     text-decoration: underline;
 }
 
-/* Sidebar Styling */
+/* Admin Sidebar Styling */
 .admin-sidebar {
     width: 260px;
     background-color: #1e3a8a; /* Dark Blue */
@@ -191,4 +191,112 @@ a.text-success:hover {
     max-width: 375px; 
     margin: 0 auto; 
     display: block; 
+}
+
+/* Artist Sidebar Styling */
+.artist-sidebar {
+    width: 260px;
+    background-color: #5A189A; /* Deep Purple */
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.artist-sidebar__logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.artist-sidebar__logo img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.artist-sidebar__nav {
+    list-style: none;
+    padding: 0 10px;
+    flex-grow: 1;
+}
+
+.artist-sidebar__link {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: #E0AAFF; /* Light Purple */
+    border-radius: 8px;
+    text-decoration: none;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+}
+
+.artist-sidebar__link:hover,
+.artist-sidebar__link--active {
+    background-color: #9D4EDD; /* Vibrant Purple */
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.artist-sidebar__footer a {
+    color: #f5f5f5;
+}
+
+.artist-sidebar__footer a:hover {
+    color: #f9f9f9; /* Gold */
+}
+
+/* Main Content Styling */
+.artist-main {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+    background: linear-gradient(145deg, #9D4EDD, #7B2CBF); /* Purple Gradient */
+    color: #ffffff;
+    height: 100vh;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.artist-main__title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #ffffff; /* Gold */
+    margin-bottom: 20px;
+}
+
+/* Form Styling */
+.artist-main__form-container {
+    background-color: #6A1B9A; /* Dark Purple */
+    color: #ffffff;
+    border: 1px solid #E0AAFF;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.artist-main__form-control {
+    background-color: #fff;
+    color: #6A1B9A;
+    border: 1px solid #E0AAFF;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.artist-main__btn {
+    background-color: #5A189A;
+    color: #ffffff;
+    font-weight: bold;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.artist-main__btn:hover {
+    background-color: #9D4EDD;
 }
