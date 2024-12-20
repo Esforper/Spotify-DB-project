@@ -23,17 +23,6 @@ def create_playlist():
         return redirect(url_for('user.home'))
     return render_template('user/create_playlist.html')
 
-@user_bp.route('/save_playlist', methods=['POST'])
-def save_playlist():
-    # Burada form verisini işle
-    playlist_name = request.form.get('playlistName')
-    playlist_description = request.form.get('playlistDescription')
-    # Veriyi yerel bellekte veya bir veri yapısında sakla
-    playlists.append({'name': playlist_name, 'description': playlist_description})
-    flash('Playlist başarıyla oluşturuldu!', 'success')
-    return redirect(url_for('user.home'))
-
-
 @user_bp.route('/delete_playlist/<int:playlist_index>', methods=['POST'])
 def delete_playlist(playlist_index):
     try:
