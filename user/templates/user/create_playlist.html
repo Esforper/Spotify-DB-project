@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Playlist Oluştur{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2>Playlist Oluştur</h2>
+    <form method="POST" action="{{ url_for('user.create_playlist') }}">
+        <div class="mb-3">
+            <label for="playlistName" class="form-label">Playlist Adı</label>
+            <input type="text" class="form-control" id="playlistName" name="playlistName" required>
+        </div>
+        <div class="mb-3">
+            <label for="playlistDescription" class="form-label">Playlist Açıklaması</label>
+            <textarea class="form-control" id="playlistDescription" name="playlistDescription" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,2 +1,26 @@
-<h1>Welcome to User Home</h1>
-<a href="{{ url_for('logout') }}">Logout</a>
+{% extends 'base.html' %}
+
+{% block title %}User Library{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Playlistler</h2>
+        <a href="{{ url_for('user.create_playlist') }}" class="btn btn-primary">Playlist Oluştur</a>
+    </div>
+
+    <!-- Playlists Grid -->
+    <div class="row">
+        {% for playlist in playlists %}
+        <div class="card">
+            <h5>{{ playlist.name }}</h5>
+            <p>{{ playlist.description }}</p>
+            <form action="{{ url_for('user.delete_playlist', playlist_index=loop.index0) }}" method="POST">
+                <button type="submit" class="btn btn-danger">Sil</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
