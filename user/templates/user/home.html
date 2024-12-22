@@ -13,12 +13,19 @@
     <!-- Playlists Grid -->
     <div class="row">
         {% for playlist in playlists %}
-        <div class="card">
-            <h5>{{ playlist.name }}</h5>
-            <p>{{ playlist.description }}</p>
-            <form action="{{ url_for('user.delete_playlist', playlist_index=loop.index0) }}" method="POST">
-                <button type="submit" class="btn btn-danger">Sil</button>
-            </form>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ playlist['CalmaListesiAdi'] }}</h5>
+                    <p class="card-text">Açıklama: {{ playlist['CalmaListesiAdi'] }} playlist description here</p>
+                    <!-- View Playlist Link -->
+                    <a href="{{ url_for('user.playlist_detail', playlist_index=loop.index) }}" class="btn btn-info">Görüntüle</a>
+                    <!-- Delete Playlist Form -->
+                    <form action="{{ url_for('user.delete_playlist', playlist_index=loop.index) }}" method="POST" class="mt-2">
+                        <button type="submit" class="btn btn-danger">Sil</button>
+                    </form>
+                </div>
+            </div>
         </div>
         {% endfor %}
     </div>

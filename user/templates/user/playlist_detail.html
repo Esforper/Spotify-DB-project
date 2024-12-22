@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ playlist['CalmaListesiAdi'] }} - Playlist{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h1>{{ playlist['CalmaListesiAdi'] }}</h1>
+    <p>Playlist hakkında açıklamalar burada yer alacak.</p>
+
+    <h2>Şarkılar</h2>
+    <ul class="list-group">
+        {% if songs %}
+            {% for song in songs %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ song['SarkiAdi'] }} - {{ song['Sure'] }}
+                    <form action="{{ url_for('user.delete_song_from_playlist', playlist_index=playlist_index, song_id=song['SarkiID']) }}" method="POST">
+                        <button type="submit" class="btn btn-danger btn-sm">Sil</button>
+                    </form>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li class="list-group-item">Bu playlist'te şarkı bulunmamaktadır.</li>
+        {% endif %}
+    </ul>
+
+    <a href="{{ url_for('user.home') }}" class="btn btn-secondary mt-3">Geri Dön</a>
+</div>
+{% endblock %}
