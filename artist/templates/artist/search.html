@@ -3,8 +3,94 @@
 {% block title %}Search Songs/Albums{% endblock %}
 
 {% block content %}
+<style>
+/* Search Form Styling */
+.search-form {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #121212;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: #ffffff;
+}
+
+.search-form .form-group {
+    margin-bottom: 15px;
+}
+
+.search-form label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #cccccc;
+}
+
+.search-form input,
+.search-form select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background: #1e1e1e;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.search-form input::placeholder {
+    color: #888;
+}
+
+.search-form .btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #800080; /* Mor arka plan */
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-form .btn:hover {
+    background-color: #660066; /* Hover için daha koyu mor */
+}
+</style>
+
 <h1>Search Songs/Albums</h1>
-<form method="GET">
-    <!-- Form fields here -->
+<form method="GET" class="search-form">
+    <div class="form-group">
+        <label for="search">Search:</label>
+        <input type="text" id="search" name="search" placeholder="Enter song or album name">
+    </div>
+    <div class="form-group">
+        <label for="artist">Artist:</label>
+        <input type="text" id="artist" name="artist" placeholder="Enter artist name">
+    </div>
+    <div class="form-group">
+        <label for="genre">Genre:</label>
+        <select id="genre" name="genre">
+            <option value="">Select genre</option>
+            <option value="pop">Pop</option>
+            <option value="rock">Rock</option>
+            <option value="jazz">Jazz</option>
+            <option value="classical">Classical</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="year">Year:</label>
+        <input type="number" id="year" name="year" placeholder="Enter release year">
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn">Search</button>
+    </div>
 </form>
 {% endblock %}
+
+
+
+
+
