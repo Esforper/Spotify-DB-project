@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Album Detail{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>{{ album['AlbumAdi'] }}</h1>
+    <p>Release Date: {{ album['YayinTarihi'] }}</p>
+
+    <h3>Songs in this Album</h3>
+    {% if songs %}
+        <ul class="list-group">
+            {% for song in songs %}
+                <li class="list-group-item">{{ song['SarkiAdi'] }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No songs found in this album.</p>
+    {% endif %}
+</div>
+{% endblock %}

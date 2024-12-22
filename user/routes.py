@@ -88,10 +88,29 @@ def delete_song_from_playlist(playlist_index, song_id):
     flash('Şarkı playlist\'ten başarıyla silindi!', 'success')
     return redirect(url_for('user.playlist_detail', playlist_index=playlist_index))
 
-@user_bp.route('/search')
+@user_bp.route('/search', methods=['GET', 'POST'])
 def search():
-    return render_template('user/search.html', title="User search")
+    query = request.args.get('q', '').lower()
+    results = {'songs': [], 'albums': [], 'artists': []}
+
+    if query:  # Kullanıcı arama yaptığında sonuçları filtrele
+        results['songs'] = [song for song in Sarki if query in song['SarkiAdi'].lower()]
+        results['albums'] = [album for album in Album if query in album['AlbumAdi'].lower()]
+        # Sanatçı ID'yi örnekle anladığım kadarıyla string araması gerekiyordu:
+        results['artists'] = list(set(song['SanatciID'] for song in Sarki if query in str(song['SanatciID'])))
+
+    return render_template('user/search.html', results=results, query=query)
+
 
 @user_bp.route('/profile')
 def profile():
     return render_template('user/profile.html', title="User profile")
+
+@user_bp.route('/album/<int:album_id>')
+def album_detail(album_id):
+    album = next((album for album in Album if album['AlbumID'] == album_id), None)
+    if album:
+        songs = [song for song in Sarki if song['AlbumID'] == album_id]
+        return render_template('user/album_detail.html', album=album, songs=songs)
+    flash('Albüm bulunamadı.', 'danger')
+    return redirect(url_for('user.search'))
