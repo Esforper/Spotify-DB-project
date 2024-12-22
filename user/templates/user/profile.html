@@ -1,7 +1,21 @@
 {% extends 'base.html' %}
 
-{% block title %}User Profile{% endblock %}
+{% block title %}Profile{% endblock %}
 
 {% block content %}
-<p>This is Profile page.</p>
+<div class="container mt-5">
+    <h1 class="mb-4">Profil Bilgileri</h1>
+
+    <div class="card">
+        <div class="card-header">
+            Kullanıcı Detayları
+        </div>
+        <div class="card-body">
+            <p><strong>Kullanıcı Adı:</strong> {{ username }}</p>
+            <p><strong>Rol:</strong> {{ role }}</p>
+        </div>
+    </div>
+
+    <a href="{{ url_for('logout') }}" class="btn btn-danger mt-3">Çıkış Yap</a>
+</div>
 {% endblock %}

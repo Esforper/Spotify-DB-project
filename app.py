@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from admin.routes import admin_bp
 from artist.routes import artist_bp
 from user.routes import user_bp
+from services import user_service
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -12,12 +13,7 @@ app.register_blueprint(admin_bp, url_prefix='/admin')
 app.register_blueprint(artist_bp, url_prefix='/artist')
 app.register_blueprint(user_bp, url_prefix='/user')
 
-# Temporary users store (for testing purposes)
-valid_users = {
-    "admin": {"password": "password", "role": "Admin"},
-    "user1": {"password": "pass123", "role": "User"},
-    "emir": {"password": "mypassword", "role": "Artist"}
-}
+user_service = user_service.UserService()
 
 # Home Route (redirects based on role)
 @app.route('/')
@@ -40,9 +36,8 @@ def login():
         password = request.form['password'].strip()
         role = request.form['role'].strip()
 
-        if username in valid_users:
-            user = valid_users[username]
-            if user['password'] == password and user['role'] == role:
+        user = user_service.validate_user(username, password, role) #user service bağlantısı.
+        if user:
                 session['logged_in'] = True
                 session['username'] = username
                 session['role'] = role
@@ -64,10 +59,12 @@ def signup():
         password = request.form['password'].strip()
         role = request.form['role'].strip()
 
-        if username in valid_users:
+        # Check if user already exists in user_service
+        if user_service.get_user(username):
             return render_template('signup.html', error="Username already exists")
 
-        valid_users[username] = {"password": password, "role": role}
+        # Normally, you would add user to the database here, but for now, just mock it
+        user_service.users[username] = {"password": password, "role": role}
         session['logged_in'] = True
         session['username'] = username
         session['role'] = role
@@ -82,11 +79,16 @@ def signup():
 
     return render_template('signup.html')
 
-# Logout Route
+
 @app.route('/logout')
 def logout():
+    username = session.get('username')
+    if username:
+        user_service.logout_user(username)
     session.clear()
+    flash('Başarıyla çıkış yaptınız.', 'success')
     return redirect(url_for('login'))
+
 
 # Run the Flask app
 if __name__ == '__main__':

@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from services.user_service import UserService
+user_service_instance = UserService()
 
 user_bp = Blueprint('user', __name__, template_folder='templates')
 
@@ -104,7 +106,24 @@ def search():
 
 @user_bp.route('/profile')
 def profile():
-    return render_template('user/profile.html', title="User profile")
+    # Kullanıcının giriş yapıp yapmadığını kontrol et
+    if 'logged_in' not in session or not session['logged_in']:
+        flash('Lütfen giriş yapın.', 'danger')
+        return redirect(url_for('login'))
+    
+    # Oturumdaki username'i al
+    username = session.get('username')
+    print(username)
+    # user_service üzerinden kullanıcı bilgilerini al
+    user = user_service_instance.get_user(username)
+
+    if not user:
+        flash('Kullanıcı bilgileri bulunamadı.', 'danger')
+        return redirect(url_for('login'))
+
+    # Kullanıcı bilgilerini şablona gönder
+    return render_template('user/profile.html', username=username, role=user['role'])
+
 
 @user_bp.route('/album/<int:album_id>')
 def album_detail(album_id):
