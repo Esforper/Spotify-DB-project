@@ -14,8 +14,8 @@ user_service = user_service.UserService()
 # MySQL configurations
 app.config['MYSQL_HOST'] = 'localhost'  # Change if using a different host
 app.config['MYSQL_USER'] = 'root'       # Your MySQL username
-app.config['MYSQL_PASSWORD'] = '12991453'  # Your MySQL password
-app.config['MYSQL_DB'] = 'Spotify_DB_Project'    # Your database name
+app.config['MYSQL_PASSWORD'] = ''  # Your MySQL password
+app.config['MYSQL_DB'] = ''    # Your database name
 
 mysql = MySQL(app)
 
