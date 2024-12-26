@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
+
+
 
 artist_bp = Blueprint('artist', __name__, template_folder='templates')
 
@@ -56,7 +58,7 @@ def remove_song():
 
 # Placeholder for the songs and albums data
 songs_albums = []
-
+"""
 @artist_bp.route('/add', methods=['GET', 'POST'])
 def add_song():
     if request.method == 'POST':
@@ -77,6 +79,39 @@ def add_song():
         # Add the new song/album
         songs_albums.append({"type": type_, "title": name})
         flash(f"{type_.capitalize()} '{name}' has been added successfully!", "success")
+        return redirect(url_for('artist.add_song'))
+
+    return render_template('artist/add_songs.html', title="Add Songs/Albums")
+"""
+@artist_bp.route('/add', methods=['GET', 'POST'])
+def add_song():
+    if request.method == 'POST':
+        # Get the song name from the form
+        sarki_adi = request.form.get('name')
+
+        # Validate the input
+        if not sarki_adi:
+            flash("Song name is required!", "danger")
+            return redirect(url_for('artist.add_song'))
+
+        # Use the MySQL instance from the current app context
+        cur = current_app.mysql.connection.cursor()
+
+        # Check if the song already exists in the database
+        cur.execute("SELECT * FROM Sarki WHERE SarkiAdi = %s", (sarki_adi,))
+        existing_song = cur.fetchone()
+
+        if existing_song:
+            flash(f"The song '{sarki_adi}' already exists.", "warning")
+            cur.close()
+            return redirect(url_for('artist.add_song'))
+
+        # Insert the song into the database
+        cur.execute("INSERT INTO Sarki (SarkiAdi) VALUES (%s)", (sarki_adi,))
+        current_app.mysql.connection.commit()
+        cur.close()
+
+        flash(f"Song '{sarki_adi}' has been added successfully!", "success")
         return redirect(url_for('artist.add_song'))
 
     return render_template('artist/add_songs.html', title="Add Songs/Albums")
