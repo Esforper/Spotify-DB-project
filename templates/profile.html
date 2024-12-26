@@ -1,8 +1,20 @@
 {% extends 'base.html' %}
+
 {% block title %}Profile{% endblock %}
+
 {% block content %}
 <div class="container">
-    <h1 class="mt-4">Profile Page</h1>
+    <h1 class="mt-4 profile-title">Profile Page</h1>
     <p class="lead">Manage your profile settings here.</p>
 </div>
+
+<!-- Inline CSS ekleniyor -->
+<style>
+    /* Profil Başlığının Stili */
+    .profile-title {
+        color: white; /* Beyaz renk */
+        font-size: 3rem; /* Daha büyük font boyutu */
+        font-weight: bold; /* Kalın yazı */
+    }
+</style>
 {% endblock %}
