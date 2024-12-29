@@ -1,9 +1,18 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from services.user_service import UserService
+from services.playlist_service import PlaylistService
+from services.song_service import SongService
+from services.album_service import AlbumService
+from flask_mysqldb import MySQL
+
 user_service_instance = UserService()
+playlist_service = PlaylistService(mysql=MySQL())
+song_service = SongService(mysql=MySQL())
+album_service = AlbumService(mysql=MySQL())
 
 user_bp = Blueprint('user', __name__, template_folder='templates')
 
+"""
 # Localde playlistleri saklamak için bir liste
 Tur = [
     {'TurID': 1, 'TurAdi': 'Pop', 'Aciklama': 'Popüler müzik'},
@@ -31,23 +40,35 @@ CalmaListesi_Sarkilar = [
     {'CalmaListesiSarkilarID': 3, 'CalmaListesiID': 2, 'SarkiID': 2},
     {'CalmaListesiSarkilarID': 4, 'CalmaListesiID': 2, 'SarkiID': 4},
 ]
-
+"""
 
 
 @user_bp.route('/home')
 def home():
-    return render_template('user/home.html', title="User library" ,playlists=CalmaListesi)
+    playlists = playlist_service.get_playlists(user_id=1)   #user serviceden bilgiler gelecek.
+    return render_template('user/home.html', title="User library" ,playlists=playlists)
 
 @user_bp.route('/playlist/<int:playlist_index>')
 def playlist_detail(playlist_index):
+    """
+    Çalma listesi detaylarını görüntüler.
+    """
     try:
-        playlist = CalmaListesi[playlist_index - 1]  # Adjust for zero-based index
-        song_ids = [item['SarkiID'] for item in CalmaListesi_Sarkilar if item['CalmaListesiID'] == playlist['CalmaListesiID']]
-        playlist_songs = [song for song in Sarki if song['SarkiID'] in song_ids]
-        return render_template('user/playlist_detail.html', playlist=playlist, songs=playlist_songs, playlist_index=playlist_index)
-    except IndexError:
-        flash('Hata: Playlist bulunamadı.', 'danger')
+        # Çalma listesini alın
+        playlist = playlist_service.get_playlist_by_id(playlist_index)
+        
+        if not playlist:
+            flash('Hata: Çalma listesi bulunamadı.', 'danger')
+            return redirect(url_for('user.home'))
+
+        # Çalma listesindeki şarkıları alın
+        playlist_songs = song_service.get_songs_by_playlist(playlist_index)
+        
+        return render_template('user/playlist_detail.html', playlist=playlist, songs=playlist_songs)
+    except Exception as e:
+        flash(f'Hata: {e}', 'danger')
         return redirect(url_for('user.home'))
+
 
 
 
@@ -55,14 +76,11 @@ def playlist_detail(playlist_index):
 def create_playlist():
     if request.method == 'POST':
         playlist_name = request.form['playlistName']
-        playlist_description = request.form['playlistDescription']
+        playlist_description = request.form['playlistDescription'] #playlist açıklaması alınıyor.
+        # Bu bilgiler anlık olarak işe yaramıyor, daha sonra değiştirilerek silinecek.
+        
         # Yeni bir playlist oluşturuyoruz
-        new_playlist = {
-            'CalmaListesiID': len(CalmaListesi) + 1,
-            'CalmaListesiAdi': playlist_name,
-            'KullaniciID': 1  # Örnek olarak, kullanıcı ID
-        }
-        CalmaListesi.append(new_playlist)
+        playlist_service.create_playlist(name=playlist_name, user_id=1)
         flash('Playlist başarıyla oluşturuldu!', 'success')
         return redirect(url_for('user.home'))
     return render_template('user/create_playlist.html')
@@ -73,35 +91,37 @@ def create_playlist():
 def delete_playlist(playlist_index):
     try:
         # Seçilen playlist'i listeden çıkarıyoruz
-        deleted_playlist = CalmaListesi.pop(playlist_index)
+        playlist_service.delete_playlist(playlist_id=playlist_index)
         # Playlist silindiğinde, bu playlist'e ait tüm şarkıları da silelim
-        global CalmaListesi_Sarkilar
-        CalmaListesi_Sarkilar = [item for item in CalmaListesi_Sarkilar if item['CalmaListesiID'] != deleted_playlist['CalmaListesiID']]
         flash('Playlist başarıyla silindi!', 'success')
     except IndexError:
         flash('Hata: Playlist bulunamadı.', 'danger')
     return redirect(url_for('user.home'))
 
+
 @user_bp.route('/delete_song_from_playlist/<int:playlist_index>/<int:song_id>', methods=['POST'])
 def delete_song_from_playlist(playlist_index, song_id):
     # Playlist'ten belirtilen şarkıyı çıkaralım
-    global CalmaListesi_Sarkilar
-    CalmaListesi_Sarkilar = [item for item in CalmaListesi_Sarkilar if not (item['CalmaListesiID'] == CalmaListesi[playlist_index]['CalmaListesiID'] and item['SarkiID'] == song_id)]
-    flash('Şarkı playlist\'ten başarıyla silindi!', 'success')
+    playlist_service.delete_song_from_playlist(playlist_id=playlist_index, song_id=song_id)  # Şarkıyı playlist'ten sil    flash('Şarkı playlist\'ten başarıyla silindi!', 'success')
     return redirect(url_for('user.playlist_detail', playlist_index=playlist_index))
 
 @user_bp.route('/search', methods=['GET', 'POST'])
 def search():
     query = request.args.get('q', '').lower()
-    results = {'songs': [], 'albums': [], 'artists': []}
+    results = {'songs': [], 'albums': [], 'playlists': []}
 
-    if query:  # Kullanıcı arama yaptığında sonuçları filtrele
-        results['songs'] = [song for song in Sarki if query in song['SarkiAdi'].lower()]
-        results['albums'] = [album for album in Album if query in album['AlbumAdi'].lower()]
-        # Sanatçı ID'yi örnekle anladığım kadarıyla string araması gerekiyordu:
-        results['artists'] = list(set(song['SanatciID'] for song in Sarki if query in str(song['SanatciID'])))
+    if query:
+        # Şarkıları sorgula
+        results['songs'] = song_service.get_songs_by_query(query)
+        
+        # Albümleri sorgula
+        results['albums'] = album_service.search_albums_by_query(query)
+        
+        # Playlistleri sorgula
+        results['playlists'] = playlist_service.search_playlists_by_query(query)
 
     return render_template('user/search.html', results=results, query=query)
+
 
 
 @user_bp.route('/profile')
@@ -127,9 +147,9 @@ def profile():
 
 @user_bp.route('/album/<int:album_id>')
 def album_detail(album_id):
-    album = next((album for album in Album if album['AlbumID'] == album_id), None)
+    album = album_service.get_album_by_id(album_id)  # Albümü album_service üzerinden al
     if album:
-        songs = [song for song in Sarki if song['AlbumID'] == album_id]
+        songs = album_service.get_songs_by_album(album_id)  # Albümdeki şarkıları album_service üzerinden al
         return render_template('user/album_detail.html', album=album, songs=songs)
     flash('Albüm bulunamadı.', 'danger')
     return redirect(url_for('user.search'))
