@@ -86,32 +86,57 @@ def add_song():
 @artist_bp.route('/add', methods=['GET', 'POST'])
 def add_song():
     if request.method == 'POST':
-        # Get the song name from the form
-        sarki_adi = request.form.get('name')
+        # Get data from the form
+        name = request.form.get('name')
+        type_ = request.form.get('type')
 
-        # Validate the input
-        if not sarki_adi:
-            flash("Song name is required!", "danger")
+        # Validate inputs
+        if not name or not type_:
+            flash("Both name and type are required!", "danger")
             return redirect(url_for('artist.add_song'))
 
         # Use the MySQL instance from the current app context
         cur = current_app.mysql.connection.cursor()
 
-        # Check if the song already exists in the database
-        cur.execute("SELECT * FROM Sarki WHERE SarkiAdi = %s", (sarki_adi,))
-        existing_song = cur.fetchone()
+        # Determine the table based on type (song or album)
+        if type_ == 'song':
+            # Check if the song already exists
+            cur.execute("SELECT * FROM Sarki WHERE SarkiAdi = %s", (name,))
+            existing_song = cur.fetchone()
 
-        if existing_song:
-            flash(f"The song '{sarki_adi}' already exists.", "warning")
+            if existing_song:
+                flash(f"The song '{name}' already exists.", "warning")
+                cur.close()
+                return redirect(url_for('artist.add_song'))
+
+            # Insert the song into the Sarki table
+            cur.execute("INSERT INTO Sarki VALUES (%s)", (name,))
+            current_app.mysql.connection.commit()
+            cur.close()
+
+        elif type_ == 'album':
+            # Check if the album already exists
+            cur.execute("SELECT * FROM Album WHERE AlbumAdi = %s", (name,))
+            existing_album = cur.fetchone()
+
+            if existing_album:
+                flash(f"The album '{name}' already exists.", "warning")
+                cur.close()
+                return redirect(url_for('artist.add_song'))
+
+            # Insert the album into the Album table
+            cur.execute("INSERT INTO Album (AlbumAdi) VALUES (%s)", (name,))
+            current_app.mysql.connection.commit()
+        else:
+            flash("Invalid type selected.", "danger")
             cur.close()
             return redirect(url_for('artist.add_song'))
 
-        # Insert the song into the database
-        cur.execute("INSERT INTO Sarki (SarkiAdi) VALUES (%s)", (sarki_adi,))
+        # Commit the transaction and close the connection
         current_app.mysql.connection.commit()
         cur.close()
 
-        flash(f"Song '{sarki_adi}' has been added successfully!", "success")
+        flash(f"{type_.capitalize()} '{name}' has been added successfully!", "success")
         return redirect(url_for('artist.add_song'))
 
     return render_template('artist/add_songs.html', title="Add Songs/Albums")
