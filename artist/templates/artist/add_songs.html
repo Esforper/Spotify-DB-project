@@ -122,8 +122,15 @@
         </div>
     
         <div class="form-group">
-            <label class="artist-main__label" for="duration">Duration:</label>
-            <input class="artist-main__form-control" type="time" id="duration" name="duration">
+            <label for="duration" class="artist-main__label">Duration (MM:SS):</label>
+            <input 
+                type="text" 
+                id="duration" 
+                name="duration" 
+                class="artist-main__form-control" 
+                placeholder="Enter duration (MM:SS)" 
+                pattern="^[0-5][0-9]:[0-5][0-9]$" 
+                title="Please enter duration in MM:SS format (e.g., 03:45)">
         </div>
     
         <div class="form-group">
