@@ -7,9 +7,54 @@ artist_bp = Blueprint('artist', __name__, template_folder='templates')
 def profile():
     return render_template('artist/profile.html', title="Artist Profile")
 
-@artist_bp.route('/search')
+@artist_bp.route('/search', methods=['GET', 'POST'])
 def search():
-    return render_template('artist/search.html', title="Search Songs/Albums")
+    try:
+        results = None  # To hold search results
+        columns = []  # To hold column names
+
+        if request.method == 'POST':
+            name = request.form.get('search')  # Get the search term
+            type_ = request.form.get('type')  # Get the type (song or album)
+
+            if not name or not type_:
+                flash("Both Name and Type are required for searching!", "danger")
+                return redirect(url_for('artist.search'))
+
+            # Access MySQL from current_app
+            cur = current_app.config['MYSQL'].connection.cursor()
+
+            if type_ == 'song':
+                query = """
+                    SELECT SarkiID, SarkiAdi, Sure, YayinTarihi, TurID, AlbumID, SanatciID
+                    FROM Sarki
+                    WHERE SarkiAdi LIKE %s
+                """
+                cur.execute(query, (f"%{name}%",))
+            elif type_ == 'album':
+                query = """
+                    SELECT AlbumID, AlbumAdi, YayinTarihi, TurID, SanatciID
+                    FROM Album
+                    WHERE AlbumAdi LIKE %s
+                """
+                cur.execute(query, (f"%{name}%",))
+
+            results = cur.fetchall()
+            columns = [desc[0] for desc in cur.description]  # Get column names from cursor
+            results = [dict(zip(columns, row)) for row in results]  # Convert tuples to dictionaries
+
+            cur.close()
+
+            if results:
+                flash(f"{len(results)} result(s) found for '{name}' in {type_.capitalize()}!", "success")
+            else:
+                flash(f"No results found for '{name}' in {type_.capitalize()}.", "warning")
+
+        return render_template('artist/search.html', title="Search Songs/Albums", results=results, columns=columns)
+
+    except Exception as e:
+        flash(f"An error occurred: {e}", "danger")
+        return redirect(url_for('artist.search'))
 
 @artist_bp.route('/remove-songs', methods=['GET', 'POST'])
 def remove_songs():
@@ -50,7 +95,6 @@ def remove_songs():
     return render_template('artist/remove_songs.html', title="Remove Songs/Albums")
 
 
-@artist_bp.route('/add-songs', methods=['GET', 'POST'])
 @artist_bp.route('/add-songs', methods=['GET', 'POST'])
 def add_songs():
     try:

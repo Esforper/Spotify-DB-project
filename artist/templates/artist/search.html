@@ -45,7 +45,7 @@
 .search-form .btn {
     width: 100%;
     padding: 10px;
-    background-color: #800080; /* Mor arka plan */
+    background-color: #800080; /* Purple background */
     border: none;
     border-radius: 4px;
     font-size: 16px;
@@ -56,41 +56,85 @@
 }
 
 .search-form .btn:hover {
-    background-color: #660066; /* Hover için daha koyu mor */
+    background-color: #660066; /* Darker purple for hover */
+}
+
+/* Results Table Styling */
+.results-table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: #1e1e1e;
+    color: #ffffff;
+    border: 1px solid #333;
+    border-radius: 8px;
+}
+
+.results-table th,
+.results-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #333;
+}
+
+.results-table th {
+    background: #800080;
+    color: #ffffff;
+}
+
+.results-table tr:nth-child(even) {
+    background: #2a2a2a;
+}
+
+.results-table tr:hover {
+    background: #333333;
 }
 </style>
 
 <h1>Search Songs/Albums</h1>
-<form method="GET" class="search-form">
+
+<!-- Search Form -->
+<form method="POST" class="search-form">
     <div class="form-group">
         <label for="search">Search:</label>
         <input type="text" id="search" name="search" placeholder="Enter song or album name">
     </div>
     <div class="form-group">
-        <label for="artist">Artist:</label>
-        <input type="text" id="artist" name="artist" placeholder="Enter artist name">
-    </div>
-    <div class="form-group">
-        <label for="genre">Genre:</label>
-        <select id="genre" name="genre">
-            <option value="">Select genre</option>
-            <option value="pop">Pop</option>
-            <option value="rock">Rock</option>
-            <option value="jazz">Jazz</option>
-            <option value="classical">Classical</option>
+        <label for="type">Type:</label>
+        <select id="type" name="type">
+            <option value="song">Song</option>
+            <option value="album">Album</option>
         </select>
-    </div>
-    <div class="form-group">
-        <label for="year">Year:</label>
-        <input type="number" id="year" name="year" placeholder="Enter release year">
     </div>
     <div class="form-group">
         <button type="submit" class="btn">Search</button>
     </div>
 </form>
+
+<!-- Results Section -->
+{% if results %}
+    <h2>Search Results:</h2>
+    <table class="results-table">
+        <thead>
+            <tr>
+                {% for column in columns %}
+                    <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in results %}
+                <tr>
+                    {% for value in row.values() %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    {% if request.method == 'POST' %}
+        <p style="text-align: center; color: #ffffff;">No results found for your search.</p>
+    {% endif %}
+{% endif %}
 {% endblock %}
-
-
-
-
-
