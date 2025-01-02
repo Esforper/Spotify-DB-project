@@ -3,3 +3,4 @@ __pycache__
 admin/__pycache__
 artist/__pycache__
 user/__pycache__
+.env

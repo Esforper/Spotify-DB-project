@@ -4,6 +4,11 @@ from artist.routes import artist_bp
 from user.routes import user_bp
 from services import user_service
 from flask_mysqldb import MySQL
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -14,8 +19,8 @@ user_service = user_service.UserService()
 # MySQL configurations
 app.config['MYSQL_HOST'] = 'localhost'  # Change if using a different host
 app.config['MYSQL_USER'] = 'root'       # Your MySQL username
-app.config['MYSQL_PASSWORD'] = ''  # Your MySQL password
-app.config['MYSQL_DB'] = ''    # Your database name
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')       # Get password from .env
+app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')  
 
 mysql = MySQL(app)
 app.config['MYSQL'] = mysql
