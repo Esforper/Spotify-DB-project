@@ -53,7 +53,7 @@
 .artist-main__btn {
     width: 100%;
     padding: 10px;
-    background-color: #800080; /* Mor arka plan */
+    background-color: #800080; /* Purple background */
     border: none;
     border-radius: 4px;
     font-size: 16px;
@@ -64,7 +64,7 @@
 }
 
 .artist-main__btn--danger:hover {
-    background-color: #660066; /* Daha koyu mor */
+    background-color: #660066; /* Darker purple */
 }
 
 .artist-main__form-container input[type="checkbox"] {
@@ -78,12 +78,45 @@
     font-size: 0.9rem;
     color: #cccccc;
 }
+/* Flash message styling */
+.flash-container {
+    max-width: 500px;
+    margin: 10px auto;
+}
+
+.flash-message {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.alert-success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.alert-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
 </style>
 
 <h1 class="artist-main__title">Remove Songs/Albums</h1>
 
 <div class="artist-main__form-container">
-    <form method="POST" action="{{ url_for('artist.remove_song') }}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} flash-message">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <form method="POST" action="{{ url_for('artist.remove_songs') }}">
         <div class="form-group">
             <label for="remove_type" class="artist-main__label">Type</label>
             <select id="remove_type" name="remove_type" class="artist-main__form-control" required>
@@ -108,4 +141,3 @@
     </form>
 </div>
 {% endblock %}
-
