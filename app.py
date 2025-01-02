@@ -18,6 +18,7 @@ app.config['MYSQL_PASSWORD'] = ''  # Your MySQL password
 app.config['MYSQL_DB'] = ''    # Your database name
 
 mysql = MySQL(app)
+app.config['MYSQL'] = mysql
 
 # Register Blueprints
 app.register_blueprint(admin_bp, url_prefix='/admin')

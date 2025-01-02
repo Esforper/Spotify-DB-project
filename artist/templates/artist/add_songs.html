@@ -53,7 +53,7 @@
 .artist-main__btn {
     width: 100%;
     padding: 10px;
-    background-color: #800080; /* Mor arka plan */
+    background-color: #800080; /* Purple background */
     border: none;
     border-radius: 4px;
     font-size: 16px;
@@ -64,18 +64,55 @@
 }
 
 .artist-main__btn:hover {
-    background-color: #660066; /* Daha koyu mor */
+    background-color: #660066; /* Darker purple */
+}
+
+/* Flash Messages Styling */
+.flashes {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.flash {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.flash.success {
+    background-color: #4caf50;
+    color: white;
+}
+
+.flash.warning {
+    background-color: #ff9800;
+    color: white;
+}
+
+.flash.danger {
+    background-color: #f44336;
+    color: white;
 }
 </style>
 
 <div class="artist-main__form-container">
-    <h1 class="artist-main__title">Add Songs/Albums</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flashes">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
     <form method="POST" class="artist-main__form">
         <div class="form-group">
             <label class="artist-main__label" for="name">Name:</label>
             <input class="artist-main__form-control" type="text" id="name" name="name" placeholder="Enter song or album name" required>
         </div>
-
+    
         <div class="form-group">
             <label class="artist-main__label" for="type">Type:</label>
             <select class="artist-main__form-control" id="type" name="type" required>
@@ -83,13 +120,33 @@
                 <option value="album">Album</option>
             </select>
         </div>
-
+    
+        <div class="form-group">
+            <label class="artist-main__label" for="duration">Duration:</label>
+            <input class="artist-main__form-control" type="time" id="duration" name="duration">
+        </div>
+    
+        <div class="form-group">
+            <label class="artist-main__label" for="release_date">Release Date:</label>
+            <input class="artist-main__form-control" type="date" id="release_date" name="release_date">
+        </div>
+    
+        <div class="form-group">
+            <label class="artist-main__label" for="genre_id">Genre ID:</label>
+            <input class="artist-main__form-control" type="number" id="genre_id" name="genre_id" placeholder="Enter Genre ID">
+        </div>
+    
+        <div class="form-group">
+            <label class="artist-main__label" for="album_id">Album ID:</label>
+            <input class="artist-main__form-control" type="number" id="album_id" name="album_id" placeholder="Enter Album ID">
+        </div>
+    
+        <div class="form-group">
+            <label class="artist-main__label" for="artist_id">Artist ID:</label>
+            <input class="artist-main__form-control" type="number" id="artist_id" name="artist_id" placeholder="Enter Artist ID" required>
+        </div>
+    
         <button class="artist-main__btn" type="submit">Add</button>
     </form>
 </div>
 {% endblock %}
-
-
-
-
-
