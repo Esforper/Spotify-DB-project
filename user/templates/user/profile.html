@@ -61,6 +61,21 @@
         color: #fff; /* Beyaz başlık */
         font-weight: bold;
     }
+    .list-unstyled {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .list-unstyled li {
+        padding: 5px 0;
+        color: #b0b0b0; /* Soluk gri */
+        font-size: 1rem;
+    }
+
+    .list-unstyled li strong {
+        color: #fff; /* Beyaz metin */
+    }
 
 </style>
 
@@ -68,7 +83,28 @@
 <div class="container mt-5">
     <h1>Profil Bilgileri</h1>
 
-    <div class="card">
+    <!-- Favori Sanatçılar Kartı -->
+    <div class="card mt-4">
+        <div class="card-header">
+            Favori Sanatçılar
+        </div>
+        <div class="card-body">
+            {% if favorite_artists %}
+                <ul class="list-unstyled">
+                    {% for artist in favorite_artists %}
+                        <li>
+                            <strong>{{ artist['SanatciIsmi'] }}</strong>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Favori sanatçınız bulunmamaktadır.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Kullanıcı Bilgileri Kartı -->
+    <div class="card mt-4">
         <div class="card-header">
             Kullanıcı Detayları
         </div>
@@ -78,6 +114,8 @@
         </div>
     </div>
 
+    <!-- Çıkış Yap Butonu -->
     <a href="{{ url_for('logout') }}" class="btn btn-logout mt-3">Çıkış Yap</a>
 </div>
+
 {% endblock %}

@@ -153,9 +153,12 @@
                 <ul class="list-group">
                     {% for artist in results.artists %}
                         <li class="list-group-item">
-                            {{ artist['SanatciAdi'] }}
-                            <form method="POST" action="{{ url_for('user.add_favorite_artist', artist_id=artist['SanatciID']) }}">
-                                <button type="submit" class="btn-favorite">&#10084;</button>
+                            <span>{{ artist['SanatciIsmi'] }}</span>
+                            <form method="POST" action="{{ url_for('user.add_favorite_artist') }}">
+                                <input type="hidden" name="artist_id" value="{{ artist['SanatciID'] }}">
+                                <button type="submit" class="btn-favorite text-danger" title="Add to Favorites">
+                                    <i class="fas fa-heart"></i>
+                                </button>
                             </form>
                         </li>
                     {% endfor %}

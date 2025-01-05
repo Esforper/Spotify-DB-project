@@ -143,15 +143,20 @@ def profile():
     # Oturumdaki username'i al
     username = session.get('username')
     print(username)
+    
     # user_service üzerinden kullanıcı bilgilerini al
     user = user_service_instance.get_user(username)
 
     if not user:
         flash('Kullanıcı bilgileri bulunamadı.', 'danger')
         return redirect(url_for('login'))
+        
+    user_id = 1  # Assuming user_id is hardcoded for now, this could be dynamic in a real app
+    # Favori sanatçıları çek
+    favorite_artists = artist_service.get_favorite_artists(user_id)
 
     # Kullanıcı bilgilerini şablona gönder
-    return render_template('user/profile.html', username=username, role=user['role'])
+    return render_template('user/profile.html', username=username, role=user['role'], favorite_artists=favorite_artists)
 
 
 @user_bp.route('/album/<int:album_id>')
@@ -211,7 +216,7 @@ def add_favorite_artist():
     artist_id = request.form.get('artist_id')  # Get artist ID from form data
 
     try:
-        user_service_instance.add_favorite_artist(user_id, artist_id)  # Add artist to favorites
+        artist_service.add_favorite_artist(user_id, artist_id)  # Add artist to favorites
         flash('Sanatçı başarıyla favorilere eklendi!', 'success')
     except Exception as e:
         flash(f'Hata: {e}', 'danger')
