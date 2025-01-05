@@ -11,11 +11,41 @@
     {% if songs %}
         <ul class="list-group">
             {% for song in songs %}
-                <li class="list-group-item">{{ song['SarkiAdi'] }}</li>
+                <li class="list-group-item">
+                    <strong>{{ song['SarkiAdi'] }}</strong> 
+                    ({{ song['Sure'] }} mins) by {{ song['SanatciIsmi'] }}
+                    <br>Album: {{ song['AlbumAdi'] }} ({{ song['YayinTarihi'] }})
+                </li>
             {% endfor %}
         </ul>
     {% else %}
         <p>No songs found in this album.</p>
     {% endif %}
+
+    <hr>
+
+    <h3>Comments</h3>
+    {% if comments %}
+        <ul class="list-group">
+            {% for comment in comments %}
+                <li class="list-group-item">
+                    <strong>{{ comment['Isim'] }}</strong> ({{ comment['YorumTarihi'] }}):
+                    <p>{{ comment['İcerik'] }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No comments yet. Be the first to comment!</p>
+    {% endif %}
+
+        <hr>
+        <h4>Add a Comment</h4>
+        <form method="POST">
+            <div class="mb-3">
+                <textarea name="comment" class="form-control" rows="3" placeholder="Write your comment here..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
 </div>
 {% endblock %}

@@ -159,15 +159,32 @@ def profile():
     return render_template('user/profile.html', username=username, role=user['role'], favorite_artists=favorite_artists)
 
 
-@user_bp.route('/album/<int:album_id>')
+@user_bp.route('/album/<int:album_id>', methods=['GET', 'POST'])
 def album_detail(album_id):
     album = album_service.get_album_by_id(album_id)  # Albümü album_service üzerinden al
-    if album:
-        songs = album_service.get_songs_by_album(album_id)  # Albümdeki şarkıları album_service üzerinden al
-        return render_template('user/album_detail.html', album=album, songs=songs)
-    flash('Albüm bulunamadı.', 'danger')
-    return redirect(url_for('user.search'))
 
+    if not album:
+        flash('Albüm bulunamadı.', 'danger')
+        return redirect(url_for('user.search'))
+
+    # Albüme ait şarkılar
+    songs = album_service.get_songs_by_album(album_id)
+    # Albüm yorumları
+    comments = album_service.get_comments_by_album(album_id)
+    # Yorum ekleme işlemi
+    if request.method == 'POST':
+        # if 'user_id' not in session:
+        #     flash('You need to log in to add a comment', 'danger')
+        #     return redirect(url_for('login'))
+        content = request.form['comment']
+        # user_id = session['user_id']
+        user_id = 1  # Assuming user_id is hardcoded for now, this could be dynamic in a real app
+        if content.strip():
+            album_service.add_comment_to_album(album_id, user_id, content)
+            flash('Comment added successfully!', 'success')
+            return redirect(url_for('user.album_detail', album_id=album_id))
+
+    return render_template('user/album_detail.html', album=album, songs=songs, comments=comments)
 
 
 
