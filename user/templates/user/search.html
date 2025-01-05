@@ -3,6 +3,8 @@
 {% block title %}Search{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <!-- Inline CSS -->
 <style>
     /* Genel Stil */
@@ -79,7 +81,21 @@
     .list-group-item:hover {
         background-color: #555; /* Liste elemanına hover rengi */
     }
-
+    .list-group-item {
+        display: flex;
+        justify-content: space-between; /* Sağ ve sol arasına boşluk bırak */
+        align-items: center; /* Yatayda ortala */
+    }
+    
+    .btn-favorite {
+        display: flex;
+        align-items: center; /* Yatayda hizala */
+        justify-content: center;
+        padding: 5px 10px;
+        border-radius: 5px;
+        background: none;
+        border: none;
+    }
 </style>
 
 <div class="container mt-5">
@@ -99,8 +115,17 @@
             {% if results.songs %}
                 <ul class="list-group">
                     {% for song in results.songs %}
-                        <li class="list-group-item">{{ song['SarkiAdi'] }}</li>
-                    {% endfor %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ song['SarkiAdi'] }}
+                        <form method="POST" action="{{ url_for('user.add_favorite_song') }}">
+                            <input type="hidden" name="song_id" value="{{ song['SarkiID'] }}">
+                            <button type="submit" class="btn-favorite text-danger" style="border: none; background: none;">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </form>
+                        
+                    </li>
+                {% endfor %}
                 </ul>
             {% else %}
                 <p>No songs found.</p>
@@ -127,7 +152,12 @@
             {% if results.artists %}
                 <ul class="list-group">
                     {% for artist in results.artists %}
-                        <li class="list-group-item">{{ artist }}</li>
+                        <li class="list-group-item">
+                            {{ artist['SanatciAdi'] }}
+                            <form method="POST" action="{{ url_for('user.add_favorite_artist', artist_id=artist['SanatciID']) }}">
+                                <button type="submit" class="btn-favorite">&#10084;</button>
+                            </form>
+                        </li>
                     {% endfor %}
                 </ul>
             {% else %}

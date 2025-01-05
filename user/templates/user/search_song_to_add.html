@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Şarkı Ara{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Şarkı Ara</h1>
+    <form method="GET" action="{{ url_for('user.search_song_to_add') }}">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Şarkı adı girin..." value="{{ query }}">
+            <input type="hidden" name="playlist_id" value="{{ playlist_id }}">
+            <button class="btn btn-primary" type="submit">Ara</button>
+        </div>
+    </form>
+    <hr>
+    {% if songs %}
+        <h2>Sonuçlar</h2>
+        <ul class="list-group">
+            {% for song in songs %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ song['SarkiAdi'] }}
+                    <form method="POST" action="{{ url_for('user.add_song_to_playlist', playlist_id=playlist_id, song_id=song['SarkiID']) }}">
+                        <button type="submit" class="btn btn-success btn-sm">Ekle</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Sonuç bulunamadı.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ playlist['CalmaListesiAdi'] }} - Playlist{% endblock %}
+{% block title %}Favorite Songs{% endblock %}
 
 {% block content %}
 <style>
@@ -27,14 +27,6 @@
         border-radius: 20px;
     }
 
-    /* Playlist başlığı */
-    .playlist-title {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #1db954;
-    }
-
-    /* Şarkı listesi */
     .list-group-item {
         background-color: #282828;
         color: #e0e0e0;
@@ -47,27 +39,11 @@
         background-color: #383838;
     }
 
-    .list-group-item .btn-danger {
-        background-color: #d32f2f;
-        border-color: #d32f2f;
-    }
-
-    .list-group-item .btn-danger:hover {
-        background-color: #c62828;
-        border-color: #c62828;
-    }
-
     .list-group-item .btn {
         border-radius: 20px;
         padding: 0.5rem 1rem;
     }
 
-    /* Şarkı silme butonu */
-    .btn-sm {
-        padding: 0.3rem 0.6rem;
-    }
-
-    /* Geri Dön butonu */
     .btn-secondary {
         background-color: #4e4e4e;
         border-color: #4e4e4e;
@@ -78,41 +54,31 @@
         border-color: #616161;
     }
 
-    /* Mobil uyumluluk */
     @media (max-width: 768px) {
         .container {
             padding: 15px;
-        }
-
-        .playlist-title {
-            font-size: 2rem;
         }
     }
 </style>
 
 <div class="container my-4">
-    <h1 class="playlist-title">{{ playlist['CalmaListesiAdi'] }}</h1>
-    <!--<p>Playlist hakkında açıklamalar burada yer alacak.</p> -->
-    <a href="{{ url_for('user.search_song_to_add', playlist_id=playlist_index) }}" class="btn btn-primary">Şarkı Ekle</a>
+    <h1 class="playlist-title">Favorite Songs</h1>
     <h2>Şarkılar</h2>
     <ul class="list-group">
         {% if songs %}
             {% for song in songs %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    {{ song['SarkiAdi'] }} - {{ song['Sure'] }}
-                    <form action="{{ url_for('user.delete_song_from_playlist', playlist_index=playlist_index, song_id=song['SarkiID']) }}" method="POST">
-                        <button type="submit" class="btn btn-danger btn-sm">Sil</button>
-                    </form>
+                    <div>
+                        <strong>{{ song['SarkiAdi'] }}</strong> 
+                        ({{ song['Sure'] }} - {{ song['YayinTarihi'] }} - Album: {{ song['AlbumAdi'] }} - Artist: {{ song['SanatciIsmi'] }})
+                    </div>
                 </li>
             {% endfor %}
         {% else %}
-            <li class="list-group-item">Bu playlist'te şarkı bulunmamaktadır.</li>
+            <li class="list-group-item">Favori şarkı bulunmamaktadır.</li>
         {% endif %}
     </ul>
-
 
     <a href="{{ url_for('user.home') }}" class="btn btn-secondary mt-3">Geri Dön</a>
 </div>
 {% endblock %}
-
-    

@@ -7,9 +7,10 @@ class PlaylistService:
         self.mysql = mysql
         
     def get_playlists(self,user_id):
-        cur = self.mysql.connection.cursor()
+        cur = self.mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cur.execute("SELECT * FROM CalmaListesi WHERE KullaniciID = %s", (user_id,))
         playlists = cur.fetchall()
+        print("Log : Playlist Service - playlist info =  ", playlists)
         cur.close()
         return playlists
     
@@ -44,9 +45,10 @@ class PlaylistService:
         
         
     def get_playlist_by_id(self, playlist_id):
-        cur = self.mysql.connection.cursor()
+        cur = self.mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cur.execute("SELECT * FROM CalmaListesi WHERE CalmaListesiID = %s", (playlist_id,))
         playlist = cur.fetchone()
+        print(f"Log: Playlist Service - playlist by ID {playlist_id} = {playlist}")
         cur.close()
         return playlist
     
@@ -61,3 +63,21 @@ class PlaylistService:
         cur.close()
         return playlists
 
+    def add_song_to_playlist(self, playlist_id, song_id):
+            cur = self.mysql.connection.cursor()
+            # Şarkının çalma listesinde olup olmadığını kontrol et
+            cur.execute("""
+                SELECT * FROM CalmaListesi_Sarkilar
+                WHERE CalmaListesiID = %s AND SarkiID = %s
+            """, (playlist_id, song_id))
+            existing = cur.fetchone()
+            if existing:
+                raise Exception("Bu şarkı zaten çalma listesinde.")
+            
+            # Şarkıyı çalma listesine ekle
+            cur.execute("""
+                INSERT INTO CalmaListesi_Sarkilar (CalmaListesiID, SarkiID)
+                VALUES (%s, %s)
+            """, (playlist_id, song_id))
+            self.mysql.connection.commit()
+            cur.close()

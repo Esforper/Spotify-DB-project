@@ -83,14 +83,24 @@
 
     <!-- Playlists Grid -->
     <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Favoriler</h5>
+                    <a href="{{ url_for('user.favorite_songs') }}" class="btn btn-view">Görüntüle</a>
+                </div>
+            </div>
+        </div>
+
+
         {% for playlist in playlists %}
         <div class="col-md-4 mb-4">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">{{ playlist['CalmaListesiAdi'] }}</h5>
-                    <p class="card-text">Açıklama: {{ playlist['CalmaListesiAdi'] }} playlist description here</p>
+                    <!--<p class="card-text">Açıklama: {{ playlist['CalmaListesiAdi'] }} playlist description here</p>-->
                     <!-- View Playlist Link -->
-                    <a href="{{ url_for('user.playlist_detail', playlist_index=loop.index) }}" class="btn btn-view">Görüntüle</a>
+                    <a href="{{ url_for('user.playlist_detail', playlist_index=playlist['CalmaListesiID']) }}" class="btn btn-view">Görüntüle</a>
                     <!-- Delete Playlist Form -->
                     <form action="{{ url_for('user.delete_playlist', playlist_index=loop.index) }}" method="POST" class="mt-2">
                         <button type="submit" class="btn btn-delete">Sil</button>

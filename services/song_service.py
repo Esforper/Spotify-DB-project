@@ -113,3 +113,32 @@ class SongService:
         songs = cur.fetchall()
         cur.close()
         return songs
+    
+    def add_favorite_song(self,user_id, song_id):
+        cur = self.mysql.connection.cursor()
+        cur.execute(
+            "INSERT INTO FavoriSarkilar (KullaniciID, SarkiID) VALUES (%s, %s)",
+            (user_id, song_id)
+        )
+        self.mysql.connection.commit()
+        cur.close()
+    
+    def get_favorite_songs(self, user_id):
+        cur = self.mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        query = """
+            SELECT 
+                S.SarkiID, S.SarkiAdi, S.Sure, S.YayinTarihi, ART.SanatciIsmi
+            FROM 
+                FavoriSarkilar F
+            JOIN 
+                Sarki S ON F.SarkiID = S.SarkiID
+            JOIN 
+                Sanatci ART ON S.SanatciID = ART.SanatciID
+            WHERE 
+                F.KullaniciID = %s
+        """
+        cur.execute(query, (user_id,))
+        result = cur.fetchall()
+        print("Log: Song Service - Favorite songs = ", result, "User ID = ", user_id)
+        cur.close()
+        return result

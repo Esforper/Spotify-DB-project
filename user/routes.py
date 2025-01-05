@@ -3,12 +3,14 @@ from services.user_service import UserService
 from services.playlist_service import PlaylistService
 from services.song_service import SongService
 from services.album_service import AlbumService
+from services.artist_service import ArtistService
 from flask_mysqldb import MySQL
 
 user_service_instance = UserService()
 playlist_service = PlaylistService(mysql=MySQL())
 song_service = SongService(mysql=MySQL())
 album_service = AlbumService(mysql=MySQL())
+artist_service = ArtistService(mysql=MySQL())
 
 user_bp = Blueprint('user', __name__, template_folder='templates')
 
@@ -48,6 +50,8 @@ def home():
     playlists = playlist_service.get_playlists(user_id=1)   #user serviceden bilgiler gelecek.
     return render_template('user/home.html', title="User library" ,playlists=playlists)
 
+
+
 @user_bp.route('/playlist/<int:playlist_index>')
 def playlist_detail(playlist_index):
     """
@@ -56,15 +60,20 @@ def playlist_detail(playlist_index):
     try:
         # Çalma listesini alın
         playlist = playlist_service.get_playlist_by_id(playlist_index)
-        
+
         if not playlist:
             flash('Hata: Çalma listesi bulunamadı.', 'danger')
             return redirect(url_for('user.home'))
 
         # Çalma listesindeki şarkıları alın
         playlist_songs = song_service.get_songs_by_playlist(playlist_index)
-        
-        return render_template('user/playlist_detail.html', playlist=playlist, songs=playlist_songs)
+
+        return render_template(
+            'user/playlist_detail.html',
+            playlist=playlist,
+            songs=playlist_songs,
+            playlist_index=playlist_index
+        )
     except Exception as e:
         flash(f'Hata: {e}', 'danger')
         return redirect(url_for('user.home'))
@@ -108,7 +117,7 @@ def delete_song_from_playlist(playlist_index, song_id):
 @user_bp.route('/search', methods=['GET', 'POST'])
 def search():
     query = request.args.get('q', '').lower()
-    results = {'songs': [], 'albums': [], 'playlists': []}
+    results = {'songs': [], 'albums': [], 'artists': []}
 
     if query:
         # Şarkıları sorgula
@@ -118,8 +127,8 @@ def search():
         results['albums'] = album_service.search_albums_by_query(query)
         
         # Playlistleri sorgula
-        results['playlists'] = playlist_service.search_playlists_by_query(query)
-
+        results['artists'] = artist_service.search_artist_by_query(query)
+        print(results['artists'])
     return render_template('user/search.html', results=results, query=query)
 
 
@@ -153,3 +162,75 @@ def album_detail(album_id):
         return render_template('user/album_detail.html', album=album, songs=songs)
     flash('Albüm bulunamadı.', 'danger')
     return redirect(url_for('user.search'))
+
+
+
+
+@user_bp.route('/search_song_to_add', methods=['GET'])
+def search_song_to_add():
+    query = request.args.get('q', '').lower()
+    playlist_id = request.args.get('playlist_id', type=int)
+    songs = []
+
+    if query:
+        # Şarkı arama işlemi
+        songs = song_service.get_songs_by_query(query)
+
+    return render_template('user/search_song_to_add.html', songs=songs, query=query, playlist_id=playlist_id)
+
+@user_bp.route('/add_song_to_playlist/<int:playlist_id>/<int:song_id>', methods=['POST'])
+def add_song_to_playlist(playlist_id, song_id):
+    try:
+        # Şarkıyı çalma listesine ekleme işlemi
+        playlist_service.add_song_to_playlist(playlist_id=playlist_id, song_id=song_id)
+        flash('Şarkı başarıyla çalma listesine eklendi!', 'success')
+    except Exception as e:
+        flash(f'Hata: {e}', 'danger')
+    return redirect(url_for('user.playlist_detail', playlist_index=playlist_id))
+
+
+
+
+@user_bp.route('/add_favorite_song', methods=['POST'])
+def add_favorite_song():
+    user_id = 1  # Assuming user_id is hardcoded for now, this could be dynamic in a real app
+    song_id = request.form.get('song_id')  # Get song ID from form data
+
+    try:
+        song_service.add_favorite_song(user_id, song_id)  # Add to favorites
+        flash('Şarkı başarıyla favorilere eklendi!', 'success')
+    except Exception as e:
+        flash(f'Hata: {e}', 'danger')
+    
+    return redirect(url_for('user.profile'))  # Redirect to profile page or desired page
+
+
+@user_bp.route('/add_favorite_artist', methods=['POST'])
+def add_favorite_artist():
+    user_id = 1  # Assuming user_id is hardcoded for now, this could be dynamic in a real app
+    artist_id = request.form.get('artist_id')  # Get artist ID from form data
+
+    try:
+        user_service_instance.add_favorite_artist(user_id, artist_id)  # Add artist to favorites
+        flash('Sanatçı başarıyla favorilere eklendi!', 'success')
+    except Exception as e:
+        flash(f'Hata: {e}', 'danger')
+
+    return redirect(url_for('user.profile'))  # Redirect to profile page or desired page
+
+@user_bp.route('/favorite_songs' , methods=['GET'])
+def favorite_songs():
+    user_id = 1
+    try:
+        favorite_songs = song_service.get_favorite_songs(user_id)
+        print("Log : favorite song - ",favorite_songs)
+        return render_template(
+            'user/favorite_songs.html',
+            songs=favorite_songs
+        )
+    except Exception as e:
+        flash(f'Hata: {e}', 'danger')
+        return redirect(url_for('user.profile'))
+    
+
+
