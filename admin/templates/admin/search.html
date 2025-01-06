@@ -5,39 +5,50 @@
 {% block admin_content %}
 <h2 class="admin-main__title">Search Users</h2>
 
-<form method="POST" action="{{ url_for('admin.search') }}" class="admin-main__form-container">
-    <div class="admin-main__form-group">
-        <label class="admin-main__label" for="query">Search Query</label>
-        <input type="text" id="query" name="query"
-               class="admin-main__form-control admin-main__form-control--small"
-               placeholder="Enter username, email, or role" required>
-    </div>
-    <button type="submit" class="admin-main__btn">SEARCH</button>
-</form>
+<div class="admin-main__form-container">
+    <form method="POST" action="{{ url_for('admin.search') }}">
+        <div class="admin-main__form-group">
+            <label class="admin-main__label" for="query">Search Query</label>
+            <input type="text" id="query" name="query" class="admin-main__form-control" placeholder="Enter username, email, or role" value="{{ query }}" required>
+        </div>
+        <button type="submit" class="admin-main__btn">Search</button>
+    </form>
+</div>
 
-<h3 class="admin-main__subtitle">Search Results:</h3>
-<table class="admin-main__table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% if results %}
-            {% for row in results %}
-            <tr>
-                <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] }}</td>
-            </tr>
+<!-- Display Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
             {% endfor %}
-        {% else %}
-            <tr>
-                <td colspan="3" class="admin-main__no-results">No results found.</td>
-            </tr>
-        {% endif %}
-    </tbody>
-</table>
+        </div>
+    {% endif %}
+{% endwith %}
+
+
+<!-- Show Results if Found -->
+{% if results %}
+    <h3 class="admin-main__title">Search Results:</h3>
+    <div class="admin-main__table-container">
+        <table class="admin-main__table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in results %}
+                    <tr>
+                        <td>{{ user[0] }}</td>
+                        <td>{{ user[1] }}</td>
+                        <td>{{ user[2] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
 {% endblock %}

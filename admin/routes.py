@@ -11,11 +11,12 @@ def dashboard():
     return render_template('admin/dashboard.html', title="Admin Dashboard")
 
 
-# 🔍 Admin Search Users/Artists
+
 @admin_bp.route('/search', methods=['GET', 'POST'])
 def search():
     results = []
     query = request.form.get('query', '')
+    user_not_found = False  # Flag to indicate no user found
 
     if request.method == 'POST' and query:
         try:
@@ -28,10 +29,17 @@ def search():
             cur.execute(sql, (f"%{query}%", f"%{query}%"))
             results = cur.fetchall()
             cur.close()
+
+            if not results:
+                user_not_found = True  # No users matched the query
+                flash("User not found.", "warning")
+
         except Exception as e:
-            flash(f"Hata: {e}", "danger")
+            flash(f"Error: {e}", "danger")
     
-    return render_template('admin/search.html', results=results, title="Search Users/Artists")
+    return render_template('admin/search.html', results=results, query=query, title="Search Users/Artists")
+
+
 
 
 # ➕ Admin Add Role
@@ -64,7 +72,7 @@ def add_role():
 
     return render_template('admin/add_role.html', title="Add Role")
 
-# 🗑️ Admin Delete Role
+
 # 🗑️ Admin Delete Role
 @admin_bp.route('/delete-role', methods=['GET', 'POST'])
 def delete_role():
@@ -95,3 +103,4 @@ def delete_role():
         return redirect(url_for('admin.delete_role'))
     
     return render_template('admin/delete_role.html', title="Delete Role")
+
