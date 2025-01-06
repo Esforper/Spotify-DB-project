@@ -23,7 +23,9 @@ a.text-success:hover {
     text-decoration: underline;
 }
 
-/* Admin Sidebar Styling */
+/* ===========================
+    Sidebar Styling
+=========================== */
 .admin-sidebar {
     width: 260px;
     background-color: #1e3a8a; /* Dark Blue */
@@ -97,8 +99,9 @@ a.text-success:hover {
 .admin-sidebar__footer a:hover {
     color: #dc2626; /* Darker red */
 }
-
-/* Main Content Styling */
+/* ===========================
+    Main Content Styling
+=========================== */
 .admin-main {
     margin-left: 260px;
     width: calc(100% - 260px);
@@ -120,20 +123,24 @@ a.text-success:hover {
     color: #1e3a8a;
     margin-bottom: 20px;
 }
-
-/* Form Styling */
+/* ===========================
+    Form Styling
+=========================== */
 .admin-main__form-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 10px; /* Space between inputs */
+    gap: 15px;
     margin-top: 15px;
-    max-width: 400px; /* Shortened input fields */
+    max-width: 400px;
     padding: 20px;
     background-color: #f9fafb;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-main__form-group {
+    margin-bottom: 15px;
 }
 
 .admin-main__label {
@@ -143,13 +150,11 @@ a.text-success:hover {
 }
 
 .admin-main__form-control {
-    display: block;
     width: 100%;
-    padding: 10px 12px;
+    padding: 10px;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     font-size: 0.9rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -160,16 +165,14 @@ a.text-success:hover {
 }
 
 .admin-main__btn {
-    display: block;
     width: 100%;
-    padding: 10px 15px;
+    padding: 10px;
     background-color: #2563eb;
-    color: #fff;
-    font-size: 1rem;
-    font-weight: bold;
+    color: white;
     border: none;
     border-radius: 6px;
-    text-transform: uppercase;
+    font-size: 1rem;
+    font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -185,13 +188,97 @@ a.text-success:hover {
 .admin-main__btn--danger:hover {
     background-color: #b91c1c;
 }
-/* Reduced Input Width */
-.admin-main__form-control--small {
-    width: 100%; 
-    max-width: 375px; 
-    margin: 0 auto; 
-    display: block; 
+/* ===========================
+    Flash Messages
+=========================== */
+.flash-container {
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
 }
+
+.flash-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.flash-table th,
+.flash-table td {
+    border: 1px solid #e5e7eb;
+    padding: 10px;
+    text-align: left;
+}
+
+.flash-table th {
+    background-color: #2563eb;
+    color: #fff;
+    font-weight: bold;
+}
+
+.flash-table tr:nth-child(even) {
+    background-color: #f1f5f9;
+}
+
+.flash-success td {
+    background-color: #ecfdf5;
+    color: #065f46;
+}
+
+.flash-error td {
+    background-color: #fef2f2;
+    color: #b91c1c;
+}
+/* ===========================
+    Compact Table Width
+=========================== */
+.admin-main__table-container {
+    width: 30%; /* Tablo genişliğini %60'a sabitledik */
+    margin: 20px auto; /* Ortalandı */
+    overflow-x: auto; /* Taşmalar için yatay kaydırma eklendi */
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-main__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem; /* Daha kompakt yazı boyutu */
+}
+
+.admin-main__table th,
+.admin-main__table td {
+    border: 1px solid #e2e8f0;
+    padding: 6px 8px; /* Daha dar hücre iç boşluğu */
+    text-align: center;
+    white-space: nowrap; /* Taşmayı engelle */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Uzun metinleri kes */
+}
+
+.admin-main__table th {
+    background-color: #2563eb;
+    color: white;
+    font-weight: bold;
+}
+
+.admin-main__table tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.admin-main__table tr:hover {
+    background-color: #eef2ff;
+}
+
+.admin-main__no-results {
+    text-align: center;
+    padding: 10px;
+    color: #dc2626;
+    font-weight: bold;
+}
+
 
 /* Artist Sidebar Styling */
 .artist-sidebar {

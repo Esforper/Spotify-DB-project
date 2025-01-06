@@ -4,19 +4,43 @@
 
 {% block admin_content %}
 <h2 class="admin-main__title">Add Role</h2>
-<div class="admin-main__form-container">
-    <label class="admin-main__label" for="username">Username</label>
-    <input type="text" id="username" name="username"
-       class="admin-main__form-control admin-main__form-control--small"
-       placeholder="Enter username" required>
+<form method="POST" action="{{ url_for('admin.add_role') }}" class="admin-main__form-container">
+    <div class="admin-main__form-group">
+        <label class="admin-main__label" for="username">Name</label>
+        <input type="text" id="username" name="username"
+               class="admin-main__form-control" placeholder="Enter username" required>
+    </div>
 
-    <label class="admin-main__label" for="role">Role</label>
-    <select id="role" name="role" class="admin-main__form-control" required>
-        <option value="Admin">Admin</option>
-        <option value="User">User</option>
-        <option value="Artist">Artist</option>
-    </select>
+    <div class="admin-main__form-group">
+        <label class="admin-main__label" for="email">Email</label>
+        <input type="email" id="email" name="email"
+               class="admin-main__form-control" placeholder="Enter email" required>
+    </div>
+
+    <div class="admin-main__form-group">
+        <label class="admin-main__label" for="password">Password</label>
+        <input type="password" id="password" name="password"
+               class="admin-main__form-control" placeholder="Enter password (optional)">
+    </div>
+
+    <div class="admin-main__form-group">
+        <label class="admin-main__label" for="role">Role</label>
+        <select id="role" name="role" class="admin-main__form-control" required>
+            <option value="Dinleyici">Dinleyici</option>
+            <option value="Sanatçı">Sanatçı</option>
+        </select>
+    </div>
 
     <button type="submit" class="admin-main__btn">Add Role</button>
-</div>
+</form>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flashes">
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 {% endblock %}

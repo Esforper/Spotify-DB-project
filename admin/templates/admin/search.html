@@ -4,17 +4,40 @@
 
 {% block admin_content %}
 <h2 class="admin-main__title">Search Users</h2>
-<div class="admin-main__form-container">
-    <label class="admin-main__label" for="search-query">Search Query</label>
-    <input type="text" id="search-query" name="query"
-       class="admin-main__form-control admin-main__form-control--small"
-       placeholder="Enter username or role" required>
-    <button type="submit" class="admin-main__btn">Search</button>
-</div>
 
-{% if result %}
-<div class="mt-4">
-    <p><strong>Search Results:</strong> {{ result }}</p>
-</div>
-{% endif %}
+<form method="POST" action="{{ url_for('admin.search') }}" class="admin-main__form-container">
+    <div class="admin-main__form-group">
+        <label class="admin-main__label" for="query">Search Query</label>
+        <input type="text" id="query" name="query"
+               class="admin-main__form-control admin-main__form-control--small"
+               placeholder="Enter username, email, or role" required>
+    </div>
+    <button type="submit" class="admin-main__btn">SEARCH</button>
+</form>
+
+<h3 class="admin-main__subtitle">Search Results:</h3>
+<table class="admin-main__table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if results %}
+            {% for row in results %}
+            <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="3" class="admin-main__no-results">No results found.</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
 {% endblock %}
