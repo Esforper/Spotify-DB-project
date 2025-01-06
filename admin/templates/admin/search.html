@@ -9,7 +9,7 @@
     <form method="POST" action="{{ url_for('admin.search') }}">
         <div class="admin-main__form-group">
             <label class="admin-main__label" for="query">Search Query</label>
-            <input type="text" id="query" name="query" class="admin-main__form-control" placeholder="Enter username, email, or role" value="{{ query }}" required>
+            <input type="text" id="query" name="query" class="admin-main__form-control" placeholder="Enter username or email" value="{{ query }}" required>
         </div>
         <button type="submit" class="admin-main__btn">Search</button>
     </form>
@@ -26,6 +26,10 @@
     {% endif %}
 {% endwith %}
 
+<!-- User Not Found Message -->
+{% if user_not_found %}
+    <div class="alert alert-warning">User not found. Please check your search query.</div>
+{% endif %}
 
 <!-- Show Results if Found -->
 {% if results %}
@@ -34,18 +38,22 @@
         <table class="admin-main__table">
             <thead>
                 <tr>
+                    <th>User ID</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Role</th>
+                    <th>Membership Date</th>
                 </tr>
             </thead>
             <tbody>
                 {% for user in results %}
-                    <tr>
-                        <td>{{ user[0] }}</td>
-                        <td>{{ user[1] }}</td>
-                        <td>{{ user[2] }}</td>
-                    </tr>
+                <tr>
+                    <td>{{ user[0] }}</td>
+                    <td>{{ user[1] }}</td>
+                    <td>{{ user[2] }}</td>
+                    <td>{{ user[3] }}</td>
+                    <td>{{ user[4] }}</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>

@@ -3,123 +3,40 @@
 {% block title %}Delete Role{% endblock %}
 
 {% block admin_content %}
-<style>
-    .admin-main__delete-container {
-        max-width: 500px;
-        margin: 50px auto;
-        padding: 20px;
-        background: #f9fafb;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+<h2 class="admin-main__title">Delete Role</h2>
+<form method="POST" action="{{ url_for('admin.delete_role') }}" class="admin-main__form-container">
 
-    .admin-main__delete-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #1e3a8a;
-        text-align: center;
-        margin-bottom: 20px;
-    }
+    <div class="admin-main__form-group">
+        <label class="admin-main__label" for="username">Username</label>
+        <input type="text" id="username" name="username"
+               class="admin-main__form-control" placeholder="Enter username" required>
+    </div>
 
-    .admin-main__form-group {
-        margin-bottom: 15px;
-    }
+    <div class="admin-main__form-group">
+        <label class="admin-main__label" for="email">Email</label>
+        <input type="email" id="email" name="email"
+               class="admin-main__form-control" placeholder="Enter email" required>
+    </div>
 
-    .admin-main__label {
-        font-weight: bold;
-        color: #2563eb;
-        margin-bottom: 5px;
-        display: block;
-    }
+    <div class="admin-main__form-group">
+        <label class="admin-main__label" for="role">Role</label>
+        <select id="role" name="role" class="admin-main__form-control" required>
+            <option value="" disabled selected>Select Role</option>
+            <option value="Dinleyici">Dinleyici</option>
+            <option value="Sanatçı">Sanatçı</option>
+        </select>
+    </div>
 
-    .admin-main__form-control {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #cbd5e1;
-        border-radius: 6px;
-        font-size: 0.9rem;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
+    <button type="submit" class="admin-main__btn admin-main__btn--danger">Delete Role</button>
+</form>
 
-    .admin-main__form-control:focus {
-        outline: none;
-        border-color: #2563eb;
-        box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
-    }
-
-    .admin-main__btn--danger {
-        width: 100%;
-        padding: 10px;
-        background-color: #dc2626;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 1rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .admin-main__btn--danger:hover {
-        background-color: #b91c1c;
-    }
-
-    .flash-container {
-        margin-top: 20px;
-        border-radius: 8px;
-        overflow: hidden;
-        text-align: center;
-    }
-
-    .flash-success {
-        background-color: #ecfdf5;
-        color: #065f46;
-        padding: 10px;
-        border-radius: 4px;
-    }
-
-    .flash-error {
-        background-color: #fef2f2;
-        color: #b91c1c;
-        padding: 10px;
-        border-radius: 4px;
-    }
-</style>
-
-<h2 class="admin-main__delete-title">Delete Role</h2>
-<div class="admin-main__delete-container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-container">
-                {% for category, message in messages %}
-                    <div class="flash-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-
-    <form method="POST" action="{{ url_for('admin.delete_role') }}">
-        <div class="admin-main__form-group">
-            <label class="admin-main__label" for="username">Username</label>
-            <input type="text" id="username" name="username" class="admin-main__form-control" placeholder="Enter username" required>
-        </div>
-
-        <div class="admin-main__form-group">
-            <label class="admin-main__label" for="email">Email</label>
-            <input type="email" id="email" name="email" class="admin-main__form-control" placeholder="Enter email" required>
-        </div>
-
-        <div class="admin-main__form-group">
-            <label class="admin-main__label" for="role">Role</label>
-            <select id="role" name="role" class="admin-main__form-control" required>
-                <option value="" disabled selected>Select Role</option>
-                <option value="Dinleyici">Dinleyici</option>
-                <option value="Sanatçı">Sanatçı</option>
-            </select>
-        </div>
-
-        <button type="submit" class="admin-main__btn--danger">Delete Role</button>
-    </form>
-</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flashes">
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 {% endblock %}

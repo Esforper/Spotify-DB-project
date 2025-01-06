@@ -11,18 +11,17 @@ def dashboard():
     return render_template('admin/dashboard.html', title="Admin Dashboard")
 
 
-
 @admin_bp.route('/search', methods=['GET', 'POST'])
 def search():
     results = []
     query = request.form.get('query', '')
-    user_not_found = False  # Flag to indicate no user found
+    user_not_found = False  # Add this flag
 
     if request.method == 'POST' and query:
         try:
             cur = current_app.config['MYSQL'].connection.cursor()
             sql = """
-                SELECT Isim, Eposta, Rol 
+                SELECT KullaniciID, Isim, Eposta, Rol, UyelikTarihi 
                 FROM Kullanici 
                 WHERE Isim LIKE %s OR Eposta LIKE %s;
             """
@@ -31,14 +30,13 @@ def search():
             cur.close()
 
             if not results:
-                user_not_found = True  # No users matched the query
-                flash("User not found.", "warning")
+                user_not_found = True  # If no results, set the flag
+                flash("User not found.", "warning")  # Flash the warning message
 
         except Exception as e:
             flash(f"Error: {e}", "danger")
     
-    return render_template('admin/search.html', results=results, query=query, title="Search Users/Artists")
-
+    return render_template('admin/search.html', results=results, query=query, user_not_found=user_not_found, title="Search Users/Artists")
 
 
 
@@ -97,10 +95,9 @@ def delete_role():
             
             flash(f"User '{username}' with role '{role}' has been deleted.", "success")
         except Exception as e:
-            flash(f"Hata: {e}", "danger")
+            flash(f"Error: {e}", "danger")
             return redirect(url_for('admin.delete_role'))
         
         return redirect(url_for('admin.delete_role'))
     
     return render_template('admin/delete_role.html', title="Delete Role")
-

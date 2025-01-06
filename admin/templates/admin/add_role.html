@@ -5,6 +5,12 @@
 {% block admin_content %}
 <h2 class="admin-main__title">Add Role</h2>
 <form method="POST" action="{{ url_for('admin.add_role') }}" class="admin-main__form-container">
+    
+    <div class="admin-main__form-group">
+        <label class="admin-main__label">User ID</label>
+        <input type="text" name="user_id" class="admin-main__form-control" placeholder="Enter User ID" required>
+    </div>
+
     <div class="admin-main__form-group">
         <label class="admin-main__label" for="username">Name</label>
         <input type="text" id="username" name="username"
@@ -21,6 +27,11 @@
         <label class="admin-main__label" for="password">Password</label>
         <input type="password" id="password" name="password"
                class="admin-main__form-control" placeholder="Enter password (optional)">
+    </div>
+
+    <div class="admin-main__form-group">
+        <label class="admin-main__label">Membership Date</label>
+        <input type="date" name="membership_date" class="admin-main__form-control" required>
     </div>
 
     <div class="admin-main__form-group">

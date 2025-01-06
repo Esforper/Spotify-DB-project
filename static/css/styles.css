@@ -109,6 +109,7 @@ a.text-success:hover {
     background-color: #ffffff;
     padding: 30px;
     overflow-y: auto;
+    
 }
 
 .admin-main__content {
@@ -127,18 +128,24 @@ a.text-success:hover {
     Form Styling
 =========================== */
 .admin-main__form-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 15px;
-    max-width: 400px;
+    max-width: 500px;
+    margin: 50px auto;
     padding: 20px;
     background-color: #f9fafb;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.admin-main__title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #1e3a8a;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Form Group Styling */
 .admin-main__form-group {
     margin-bottom: 15px;
 }
@@ -147,6 +154,7 @@ a.text-success:hover {
     font-weight: bold;
     color: #2563eb;
     margin-bottom: 5px;
+    display: block;
 }
 
 .admin-main__form-control {
@@ -164,6 +172,7 @@ a.text-success:hover {
     box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
 }
 
+/* Buttons */
 .admin-main__btn {
     width: 100%;
     padding: 10px;
@@ -175,10 +184,6 @@ a.text-success:hover {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
-}
-
-.admin-main__btn:hover {
-    background-color: #1d4ed8;
 }
 
 .admin-main__btn--danger {
@@ -262,9 +267,9 @@ a.text-success:hover {
     Compact Table Width
 =========================== */
 .admin-main__table-container {
-    width: 30%; /* Tablo genişliğini %60'a sabitledik */
-    margin: 20px auto; /* Ortalandı */
-    overflow-x: auto; /* Taşmalar için yatay kaydırma eklendi */
+    width: 90%; /* Wider container */
+    margin: 20px auto; /* Center alignment */
+    overflow-x: auto; /* Horizontal scrolling for smaller screens */
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     background-color: #ffffff;
@@ -274,17 +279,18 @@ a.text-success:hover {
 .admin-main__table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.9rem; /* Daha kompakt yazı boyutu */
+    font-size: 0.9rem; /* Slightly smaller text */
+    table-layout: auto; /* Flexible column widths */
 }
 
 .admin-main__table th,
 .admin-main__table td {
     border: 1px solid #e2e8f0;
-    padding: 6px 8px; /* Daha dar hücre iç boşluğu */
+    padding: 10px 12px;
     text-align: center;
-    white-space: nowrap; /* Taşmayı engelle */
+    white-space: nowrap; /* Prevent text wrapping */
     overflow: hidden;
-    text-overflow: ellipsis; /* Uzun metinleri kes */
+    text-overflow: ellipsis;
 }
 
 .admin-main__table th {

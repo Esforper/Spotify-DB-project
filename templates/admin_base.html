@@ -11,13 +11,10 @@
 <body>
     <!-- Sidebar -->
     <nav class="admin-sidebar">
-        <!-- Logo -->
-        <div class="admin-sidebar__logo">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
-        </div>
 
         <!-- Navigation -->
         <ul class="admin-sidebar__nav">
+            <h2 class="artist-sidebar__logo">Tune Beat for Admin</h2>
             <li>
                 <a href="{{ url_for('admin.dashboard') }}" class="admin-sidebar__link {% if request.path == url_for('admin.dashboard') %}admin-sidebar__link--active{% endif %}">
                     <i class="fas fa-home"></i> Dashboard
