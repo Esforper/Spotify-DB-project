@@ -92,15 +92,21 @@
 
 <div class="container my-4">
     <h1 class="playlist-title">{{ playlist['CalmaListesiAdi'] }}</h1>
-    <!--<p>Playlist hakkında açıklamalar burada yer alacak.</p> -->
     <a href="{{ url_for('user.search_song_to_add', playlist_id=playlist_index) }}" class="btn btn-primary">Şarkı Ekle</a>
     <h2>Şarkılar</h2>
     <ul class="list-group">
         {% if songs %}
             {% for song in songs %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    {{ song['SarkiAdi'] }} - {{ song['Sure'] }}
-                    <form action="{{ url_for('user.delete_song_from_playlist', playlist_index=playlist_index, song_id=song['SarkiID']) }}" method="POST">
+                <li class="list-group-item">
+                    <div>
+                        <strong>{{ song['SarkiAdi'] }}</strong> - {{ song['Sure'] }}<br>
+                        <small>
+                            <em>Albüm:</em> {{ song['AlbumAdi'] }}<br>
+                            <em>Sanatçı:</em> {{ song['SanatciIsmi'] }}<br>
+                            <em>Yayın Tarihi:</em> {{ song['SarkiYayinTarihi'] }}
+                        </small>
+                    </div>
+                    <form action="{{ url_for('user.delete_song_from_playlist', playlist_index=playlist_index, song_id=song['SarkiID']) }}" method="POST" class="mt-2">
                         <button type="submit" class="btn btn-danger btn-sm">Sil</button>
                     </form>
                 </li>
@@ -110,9 +116,6 @@
         {% endif %}
     </ul>
 
-
     <a href="{{ url_for('user.home') }}" class="btn btn-secondary mt-3">Geri Dön</a>
 </div>
 {% endblock %}
-
-    
