@@ -1,11 +1,23 @@
 -- Kullanıcı Ekleme
 INSERT INTO Kullanici (Isim, Eposta, Sifre, UyelikTarihi, Rol)
 VALUES 
+('Tarkan', 'tarkan@example.com', 'tarkan123', '2024-07-01', 'Sanatçı'),
+('Sezen Aksu', 'sezen@example.com', 'sezen123', '2024-06-15', 'Sanatçı'),
+('Cem Karaca', 'cem@example.com', 'cem123', '2024-05-10', 'Sanatçı'),
+('Barış Manço', 'baris@example.com', 'baris123', '2024-04-20', 'Sanatçı'),
+('Ajda Pekkan', 'ajda@example.com', 'ajda123', '2024-03-05', 'Sanatçı'),
+('Teoman', 'teoman@example.com', 'teoman123', '2024-02-25', 'Sanatçı'),
+('Ceza', 'ceza@example.com', 'ceza123', '2024-01-30', 'Sanatçı'),
+('Zeki Müren', 'zeki@example.com', 'zeki123', '2023-12-15', 'Sanatçı'),
+('Edis', 'edis@example.com', 'edis123', '2023-11-10', 'Sanatçı'),
+('Gülşen', 'gulsen@example.com', 'gulsen123', '2023-10-05', 'Sanatçı'),
 ('Ahmet Yılmaz', 'ahmet@example.com', '123456', '2024-12-12', 'Dinleyici'),
 ('Mehmet Kaya', 'mehmet@example.com', '654321', '2024-11-10', 'Dinleyici'),
 ('Ayşe Çelik', 'ayse@example.com', '123654', '2024-10-01', 'Dinleyici'),
 ('Fatma Öztürk', 'fatma@example.com', '321456', '2024-09-15', 'Dinleyici'),
 ('Ali Demir', 'ali@example.com', '654123', '2024-08-20', 'Dinleyici');
+
+
 
 -- Tür Ekleme
 INSERT INTO Tur (TurAdi, Aciklama) 
@@ -248,11 +260,6 @@ SELECT Kullanici.Isim AS KullaniciAdi, CalmaListesi.CalmaListesiAdi
 FROM Kullanici
 JOIN CalmaListesi ON Kullanici.KullaniciID = CalmaListesi.KullaniciID;
 
--- bir albümdeki şarkıları listele
-SELECT Sarki.SarkiAdi, Sarki.Sure
-FROM Sarki
-WHERE Sarki.SarkiID = 1;
-
 -- bir kullanıcının favori şarkılarını listele
 SELECT Sarki.SarkiAdi
 FROM FavoriSarkilar
@@ -284,6 +291,21 @@ FROM Takip
 JOIN Sanatci ON Takip.TakipEdilenSanatciID = Sanatci.SanatciID
 WHERE Takip.TakipEdenKullaniciID = 1;
 
+-- Bir şarkının bulunduğu albüm ve bu albümde yer alan sanatçıyı listele
+SELECT Sarki.SarkiAdi AS SarkiAdi, Album.AlbumAdi AS AlbumAdi, Sanatci.SanatciIsmi AS SanatciAdi
+FROM Sarki
+JOIN Album ON Sarki.AlbumID = Album.AlbumID
+JOIN Sanatci ON Album.SanatciID = Sanatci.SanatciID
+WHERE Sarki.SarkiID = 1;
+
+
+
+
+-- bir albümdeki şarkıları listele
+SELECT Sarki.SarkiAdi, Sarki.Sure
+FROM Sarki
+WHERE Sarki.SarkiID = 1;
+
 --  kullanıcı ismini güncelle
 UPDATE Kullanici
 SET Isim = 'Mehmet Yılmaz'
@@ -309,7 +331,231 @@ DELETE FROM SarkiYorumlari
 WHERE YorumID = 1;
 
 
+DELIMITER $$
 
+-- Kullanıcı Ekleme Saklı Yordamı
+CREATE PROCEDURE EkleKullanici (
+    IN p_Isim VARCHAR(100),
+    IN p_Eposta VARCHAR(100),
+    IN p_Sifre VARCHAR(100),
+    IN p_UyelikTarihi DATE,
+    IN p_Rol VARCHAR(50)
+)
+BEGIN
+    INSERT INTO Kullanici (Isim, Eposta, Sifre, UyelikTarihi, Rol)
+    VALUES (p_Isim, p_Eposta, p_Sifre, p_UyelikTarihi, p_Rol);
+END $$
+
+DELIMITER ;
+
+-- Kullanıcı Ekleme Saklı Yordamını Çağırma
+CALL EkleKullanici('Ahmet Yılmaz2', 'ahmet2@example.com', '123456', '2024-12-12', 'Dinleyici');
+CALL EkleKullanici('Mehmet Kaya2', 'mehmet2@example.com', '654321', '2024-11-10', 'Dinleyici');
+-- Diğer kullanıcı ekleme işlemleri...
+
+
+
+DELIMITER $$
+
+-- Tür Ekleme Saklı Yordamı
+CREATE PROCEDURE EkleTur (
+    IN p_TurAdi VARCHAR(100),
+    IN p_Aciklama TEXT
+)
+BEGIN
+    INSERT INTO Tur (TurAdi, Aciklama)
+    VALUES (p_TurAdi, p_Aciklama);
+END $$
+
+DELIMITER ;
+
+-- Tür Ekleme Saklı Yordamını Çağırma
+CALL EkleTur('Pop', 'Pop müzik türü');
+CALL EkleTur('Rock', 'Rock müzik türü');
+-- Diğer tür ekleme işlemleri...
+
+-- Kullanıcı Ekleme
+CALL EkleKullanici('Ahmet Yılmaz', 'ahmet@example.com', '123456', '2024-12-12', 'Dinleyici');
+CALL EkleKullanici('Mehmet Kaya', 'mehmet@example.com', '654321', '2024-11-10', 'Dinleyici');
+CALL EkleKullanici('Ayşe Çelik', 'ayse@example.com', '123654', '2024-10-01', 'Dinleyici');
+-- Diğer kullanıcı ekleme işlemleri...
+
+-- Tür Ekleme
+CALL EkleTur('Pop', 'Pop müzik türü');
+CALL EkleTur('Rock', 'Rock müzik türü');
+CALL EkleTur('Türk Sanat Müziği', 'Geleneksel Türk müziği');
+-- Diğer tür ekleme işlemleri...
+
+-- Sanatçı Ekleme
+CALL Sanatci(1, 'Tarkan', 'Türk pop müziğinin megastarı.');
+CALL Sanatci(2, 'Sezen Aksu', 'Minik Serçe lakaplı ünlü sanatçı.');
+CALL Sanatci(3, 'Cem Karaca', 'Türk rock müziğinin öncülerinden.');
+-- Diğer sanatçı ekleme işlemleri...
+
+-- Albüm Ekleme
+CALL Album('Ölürüm Sana', '1997-05-15', 1, 1);
+CALL Album('Kuzu Kuzu', '2001-05-25', 1, 1);
+-- Diğer albüm ekleme işlemleri...
+
+-- 1. Kullanıcıların Dinlediği Albümler ve Şarkı Sayıları
+SELECT u.user_id, a.album_name, COUNT(s.song_id) AS song_count
+FROM user u
+JOIN user_album_listens ual ON u.user_id = ual.user_id
+JOIN album a ON ual.album_id = a.album_id
+JOIN song s ON a.album_id = s.album_id
+GROUP BY u.user_id, a.album_name;
+
+-- 2. Sanatçılar ve Albümleri
+SELECT artist_name, album_name
+FROM artist ar
+JOIN album al ON ar.artist_id = al.artist_id
+ORDER BY artist_name;
+
+-- 3. Kullanıcıların Dinlediği Şarkıların Albüm ve Sanatçı Bilgisi
+SELECT u.user_id, s.song_name, al.album_name, ar.artist_name
+FROM user u
+JOIN user_song_listens usl ON u.user_id = usl.user_id
+JOIN song s ON usl.song_id = s.song_id
+JOIN album al ON s.album_id = al.album_id
+JOIN artist ar ON al.artist_id = ar.artist_id
+ORDER BY u.user_id;
+
+-- 4. Albüm Türüne Göre Kullanıcı Dinlemeleri
+SELECT al.genre, u.user_id, COUNT(ual.album_id) AS album_listen_count
+FROM album al
+JOIN user_album_listens ual ON al.album_id = ual.album_id
+JOIN user u ON ual.user_id = u.user_id
+GROUP BY al.genre, u.user_id;
+
+-- 5. Sanatçılar ve En Çok Dinlenen Albümleri
+SELECT ar.artist_name, al.album_name, MAX(ual.listen_count) AS max_listens
+FROM artist ar
+JOIN album al ON ar.artist_id = al.artist_id
+JOIN user_album_listens ual ON al.album_id = ual.album_id
+GROUP BY ar.artist_name, al.album_name
+ORDER BY max_listens DESC;
+
+-- 6. Albümler ve Dinlenme Sayısı
+SELECT al.album_name, SUM(ual.listen_count) AS total_listens
+FROM album al
+JOIN user_album_listens ual ON al.album_id = ual.album_id
+GROUP BY al.album_name
+ORDER BY total_listens DESC;
+
+-- 7. Kullanıcıların Dinlediği Albüm Sayıları ve Türleri
+SELECT u.user_id, al.genre, COUNT(DISTINCT ual.album_id) AS album_count
+FROM user u
+JOIN user_album_listens ual ON u.user_id = ual.user_id
+JOIN album al ON ual.album_id = al.album_id
+GROUP BY u.user_id, al.genre;
+
+-- 8. Sanatçılar ve Albümleri Arasındaki Ortak Dinlemeler
+SELECT ar.artist_name, al.album_name, COUNT(ual.user_id) AS common_listeners
+FROM artist ar
+JOIN album al ON ar.artist_id = al.artist_id
+JOIN user_album_listens ual ON al.album_id = ual.album_id
+GROUP BY ar.artist_name, al.album_name
+HAVING common_listeners > 5
+ORDER BY common_listeners DESC;
+
+-- 9. Adminlerin Yaptığı Aktivite Türleri
+SELECT DISTINCT a.admin_id, aa.activity_type
+FROM admin a
+JOIN admin_activity aa ON a.admin_id = aa.admin_id
+WHERE aa.activity_type = 'login'
+ORDER BY a.admin_id;
+
+-- 10. Şarkı ve Albüm Bilgileri
+SELECT s.song_name, a.album_name
+FROM song s
+JOIN album a ON s.album_id = a.album_id
+ORDER BY s.song_name;
+
+-- 11. Kullanıcıların Dinledikleri Albüm ve Sanatçılar
+SELECT u.user_id, al.album_name, ar.artist_name
+FROM user u
+JOIN user_album_listens ual ON u.user_id = ual.user_id
+JOIN album al ON ual.album_id = al.album_id
+JOIN artist ar ON al.artist_id = ar.artist_id
+ORDER BY u.user_id;
+
+-- 12. Albümlerin Yayın Yılına Göre Kullanıcı Dinlemeleri
+SELECT al.release_year, u.user_id, COUNT(ual.album_id) AS listens
+FROM album al
+JOIN user_album_listens ual ON al.album_id = ual.album_id
+JOIN user u ON ual.user_id = u.user_id
+GROUP BY al.release_year, u.user_id
+ORDER BY al.release_year, listens DESC;
+
+-- 13. Kullanıcıların Dinledikleri Albümler ve Şarkılar
+SELECT u.user_id, al.album_name, s.song_name
+FROM user u
+JOIN user_song_listens usl ON u.user_id = usl.user_id
+JOIN song s ON usl.song_id = s.song_id
+JOIN album al ON s.album_id = al.album_id
+ORDER BY u.user_id;
+
+-- 14. Sanatçılar ve En Çok Dinlenen Şarkıları
+SELECT ar.artist_name, s.song_name, COUNT(usl.user_id) AS total_listens
+FROM artist ar
+JOIN album al ON ar.artist_id = al.artist_id
+JOIN song s ON al.album_id = s.album_id
+JOIN user_song_listens usl ON s.song_id = usl.song_id
+GROUP BY ar.artist_name, s.song_name
+ORDER BY total_listens DESC;
+
+-- 15. Albüm Türüne Göre Toplam Dinlenme Sayısı
+SELECT genre, SUM(listen_count) AS total_listens FROM album GROUP BY genre;
+
+
+--1. Şarkı Dinlendiğinde Dinlenme Sayısını Güncelleme (AFTER INSERT Trigger)
+DELIMITER //
+CREATE TRIGGER update_song_listen_count
+AFTER INSERT ON user_song_listens
+FOR EACH ROW
+BEGIN
+    -- Şarkının dinlenme sayısını 1 artır
+    UPDATE song
+    SET listen_count = listen_count + 1
+    WHERE song_id = NEW.song_id;
+END;
+//
+DELIMITER ;
+
+--2. Kullanıcı Albüm Dinlemesi Sırasında Kullanıcı Sayısını Güncelleme (AFTER INSERT Trigger)
+
+DELIMITER //
+CREATE TRIGGER update_album_listen_count
+AFTER INSERT ON user_album_listens
+FOR EACH ROW
+BEGIN
+    -- Albümün dinlenme sayısını 1 artır
+    UPDATE album
+    SET listen_count = listen_count + 1
+    WHERE album_id = NEW.album_id;
+    
+    -- Albümün dinlendiği kullanıcı sayısını artır
+    UPDATE album
+    SET user_count = user_count + 1
+    WHERE album_id = NEW.album_id;
+END;
+//
+DELIMITER ;
+
+--3. Admin Aktivitesi Kaydını Güncelleme (BEFORE DELETE Trigger)
+
+DELIMITER //
+CREATE TRIGGER update_admin_activity_before_delete
+BEFORE DELETE ON admin
+FOR EACH ROW
+BEGIN
+    -- Admin silinmeden önce, adminin son aktivitesini güncelle
+    UPDATE admin_activity
+    SET last_active_date = NOW()
+    WHERE admin_id = OLD.admin_id;
+END;
+//
+DELIMITER ;
 
 
 
