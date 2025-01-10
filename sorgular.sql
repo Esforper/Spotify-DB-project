@@ -398,164 +398,175 @@ CALL Album('Kuzu Kuzu', '2001-05-25', 1, 1);
 -- Diğer albüm ekleme işlemleri...
 
 -- 1. Kullanıcıların Dinlediği Albümler ve Şarkı Sayıları
-SELECT u.user_id, a.album_name, COUNT(s.song_id) AS song_count
-FROM user u
-JOIN user_album_listens ual ON u.user_id = ual.user_id
-JOIN album a ON ual.album_id = a.album_id
-JOIN song s ON a.album_id = s.album_id
-GROUP BY u.user_id, a.album_name;
+SELECT k.KullaniciID, a.AlbumAdi, COUNT(s.SarkiID) AS SarkiSayisi
+FROM Kullanici k
+JOIN CalmaListesi_Sarkilar cls ON k.KullaniciID = cls.CalmaListesiID
+JOIN Sarki s ON cls.SarkiID = s.SarkiID
+JOIN Album a ON s.AlbumID = a.AlbumID
+GROUP BY k.KullaniciID, a.AlbumAdi;
+
 
 -- 2. Sanatçılar ve Albümleri
-SELECT artist_name, album_name
-FROM artist ar
-JOIN album al ON ar.artist_id = al.artist_id
-ORDER BY artist_name;
+SELECT s.SanatciIsmi, a.AlbumAdi
+FROM Sanatci s
+JOIN Album a ON s.SanatciID = a.SanatciID
+ORDER BY s.SanatciIsmi;
+
 
 -- 3. Kullanıcıların Dinlediği Şarkıların Albüm ve Sanatçı Bilgisi
-SELECT u.user_id, s.song_name, al.album_name, ar.artist_name
-FROM user u
-JOIN user_song_listens usl ON u.user_id = usl.user_id
-JOIN song s ON usl.song_id = s.song_id
-JOIN album al ON s.album_id = al.album_id
-JOIN artist ar ON al.artist_id = ar.artist_id
-ORDER BY u.user_id;
+SELECT k.KullaniciID, s.SarkiAdi, a.AlbumAdi, sa.SanatciIsmi
+FROM Kullanici k
+JOIN CalmaListesi_Sarkilar cls ON k.KullaniciID = cls.CalmaListesiID
+JOIN Sarki s ON cls.SarkiID = s.SarkiID
+JOIN Album a ON s.AlbumID = a.AlbumID
+JOIN Sanatci sa ON a.SanatciID = sa.SanatciID
+ORDER BY k.KullaniciID;
+
 
 -- 4. Albüm Türüne Göre Kullanıcı Dinlemeleri
-SELECT al.genre, u.user_id, COUNT(ual.album_id) AS album_listen_count
-FROM album al
-JOIN user_album_listens ual ON al.album_id = ual.album_id
-JOIN user u ON ual.user_id = u.user_id
-GROUP BY al.genre, u.user_id;
+SELECT t.TurAdi, k.KullaniciID, COUNT(a.AlbumID) AS AlbumDinlemeSayisi
+FROM Album a
+JOIN Tur t ON a.TurID = t.TurID
+JOIN CalmaListesi_Sarkilar cls ON a.AlbumID = cls.CalmaListesiID
+JOIN Kullanici k ON cls.CalmaListesiID = k.KullaniciID
+GROUP BY t.TurAdi, k.KullaniciID;
+
 
 -- 5. Sanatçılar ve En Çok Dinlenen Albümleri
-SELECT ar.artist_name, al.album_name, MAX(ual.listen_count) AS max_listens
-FROM artist ar
-JOIN album al ON ar.artist_id = al.artist_id
-JOIN user_album_listens ual ON al.album_id = ual.album_id
-GROUP BY ar.artist_name, al.album_name
-ORDER BY max_listens DESC;
+SELECT sa.SanatciIsmi, a.AlbumAdi, MAX(cls.CalmaListesiID) AS MaxDinleme
+FROM Sanatci sa
+JOIN Album a ON sa.SanatciID = a.SanatciID
+JOIN CalmaListesi_Sarkilar cls ON a.AlbumID = cls.CalmaListesiID
+GROUP BY sa.SanatciIsmi, a.AlbumAdi
+ORDER BY MaxDinleme DESC;
+
 
 -- 6. Albümler ve Dinlenme Sayısı
-SELECT al.album_name, SUM(ual.listen_count) AS total_listens
-FROM album al
-JOIN user_album_listens ual ON al.album_id = ual.album_id
-GROUP BY al.album_name
-ORDER BY total_listens DESC;
+SELECT a.AlbumAdi, COUNT(cls.CalmaListesiID) AS ToplamDinleme
+FROM Album a
+JOIN CalmaListesi_Sarkilar cls ON a.AlbumID = cls.CalmaListesiID
+GROUP BY a.AlbumAdi
+ORDER BY ToplamDinleme DESC;
+
 
 -- 7. Kullanıcıların Dinlediği Albüm Sayıları ve Türleri
-SELECT u.user_id, al.genre, COUNT(DISTINCT ual.album_id) AS album_count
-FROM user u
-JOIN user_album_listens ual ON u.user_id = ual.user_id
-JOIN album al ON ual.album_id = al.album_id
-GROUP BY u.user_id, al.genre;
+SELECT k.KullaniciID, t.TurAdi, COUNT(DISTINCT a.AlbumID) AS AlbumSayisi
+FROM Kullanici k
+JOIN CalmaListesi_Sarkilar cls ON k.KullaniciID = cls.CalmaListesiID
+JOIN Album a ON cls.CalmaListesiID = a.AlbumID
+JOIN Tur t ON a.TurID = t.TurID
+GROUP BY k.KullaniciID, t.TurAdi;
+
 
 -- 8. Sanatçılar ve Albümleri Arasındaki Ortak Dinlemeler
-SELECT ar.artist_name, al.album_name, COUNT(ual.user_id) AS common_listeners
-FROM artist ar
-JOIN album al ON ar.artist_id = al.artist_id
-JOIN user_album_listens ual ON al.album_id = ual.album_id
-GROUP BY ar.artist_name, al.album_name
-HAVING common_listeners > 5
-ORDER BY common_listeners DESC;
+SELECT sa.SanatciIsmi, a.AlbumAdi, COUNT(cls.CalmaListesiID) AS OrtakDinleme
+FROM Sanatci sa
+JOIN Album a ON sa.SanatciID = a.SanatciID
+JOIN CalmaListesi_Sarkilar cls ON a.AlbumID = cls.CalmaListesiID
+GROUP BY sa.SanatciIsmi, a.AlbumAdi
+HAVING OrtakDinleme > 5
+ORDER BY OrtakDinleme DESC;
+
 
 -- 9. Adminlerin Yaptığı Aktivite Türleri
-SELECT DISTINCT a.admin_id, aa.activity_type
-FROM admin a
-JOIN admin_activity aa ON a.admin_id = aa.admin_id
-WHERE aa.activity_type = 'login'
-ORDER BY a.admin_id;
+SELECT DISTINCT y.YoneticiID, 'login' AS AktiviteTuru
+FROM Yonetici y
+ORDER BY y.YoneticiID;
+
 
 -- 10. Şarkı ve Albüm Bilgileri
-SELECT s.song_name, a.album_name
-FROM song s
-JOIN album a ON s.album_id = a.album_id
-ORDER BY s.song_name;
+SELECT s.SarkiAdi, a.AlbumAdi
+FROM Sarki s
+JOIN Album a ON s.AlbumID = a.AlbumID
+ORDER BY s.SarkiAdi;
+
 
 -- 11. Kullanıcıların Dinledikleri Albüm ve Sanatçılar
-SELECT u.user_id, al.album_name, ar.artist_name
-FROM user u
-JOIN user_album_listens ual ON u.user_id = ual.user_id
-JOIN album al ON ual.album_id = al.album_id
-JOIN artist ar ON al.artist_id = ar.artist_id
-ORDER BY u.user_id;
+SELECT k.KullaniciID, a.AlbumAdi, sa.SanatciIsmi
+FROM Kullanici k
+JOIN KullaniciAlbumDinleme ua ON k.KullaniciID = ua.KullaniciID
+JOIN Album a ON ua.AlbumID = a.AlbumID
+JOIN Sanatci sa ON a.SanatciID = sa.SanatciID
+ORDER BY k.KullaniciID;
+
 
 -- 12. Albümlerin Yayın Yılına Göre Kullanıcı Dinlemeleri
-SELECT al.release_year, u.user_id, COUNT(ual.album_id) AS listens
-FROM album al
-JOIN user_album_listens ual ON al.album_id = ual.album_id
-JOIN user u ON ual.user_id = u.user_id
-GROUP BY al.release_year, u.user_id
-ORDER BY al.release_year, listens DESC;
+SELECT a.YayinTarihi AS YayinYili, k.KullaniciID, COUNT(ua.AlbumID) AS DinlenmeSayisi
+FROM Album a
+JOIN KullaniciAlbumDinleme ua ON a.AlbumID = ua.AlbumID
+JOIN Kullanici k ON ua.KullaniciID = k.KullaniciID
+GROUP BY a.YayinTarihi, k.KullaniciID
+ORDER BY a.YayinTarihi, DinlenmeSayisi DESC;
 
 -- 13. Kullanıcıların Dinledikleri Albümler ve Şarkılar
-SELECT u.user_id, al.album_name, s.song_name
-FROM user u
-JOIN user_song_listens usl ON u.user_id = usl.user_id
-JOIN song s ON usl.song_id = s.song_id
-JOIN album al ON s.album_id = al.album_id
-ORDER BY u.user_id;
+SELECT k.KullaniciID, a.AlbumAdi, s.SarkiAdi
+FROM Kullanici k
+JOIN KullaniciSarkiDinleme us ON k.KullaniciID = us.KullaniciID
+JOIN Sarki s ON us.SarkiID = s.SarkiID
+JOIN Album a ON s.AlbumID = a.AlbumID
+ORDER BY k.KullaniciID;
+
 
 -- 14. Sanatçılar ve En Çok Dinlenen Şarkıları
-SELECT ar.artist_name, s.song_name, COUNT(usl.user_id) AS total_listens
-FROM artist ar
-JOIN album al ON ar.artist_id = al.artist_id
-JOIN song s ON al.album_id = s.album_id
-JOIN user_song_listens usl ON s.song_id = usl.song_id
-GROUP BY ar.artist_name, s.song_name
-ORDER BY total_listens DESC;
+SELECT sa.SanatciIsmi, s.SarkiAdi, COUNT(us.KullaniciID) AS ToplamDinlenme
+FROM Sanatci sa
+JOIN Album a ON sa.SanatciID = a.SanatciID
+JOIN Sarki s ON a.AlbumID = s.AlbumID
+JOIN KullaniciSarkiDinleme us ON s.SarkiID = us.SarkiID
+GROUP BY sa.SanatciIsmi, s.SarkiAdi
+ORDER BY ToplamDinlenme DESC;
+
 
 -- 15. Albüm Türüne Göre Toplam Dinlenme Sayısı
-SELECT genre, SUM(listen_count) AS total_listens FROM album GROUP BY genre;
+SELECT t.TurAdi, SUM(a.DinlenmeSayisi) AS ToplamDinlenme
+FROM Album a
+JOIN Tur t ON a.TurID = t.TurID
+GROUP BY t.TurAdi;
+
 
 
 --1. Şarkı Dinlendiğinde Dinlenme Sayısını Güncelleme (AFTER INSERT Trigger)
 DELIMITER //
-CREATE TRIGGER update_song_listen_count
-AFTER INSERT ON user_song_listens
+CREATE TRIGGER SarkiDinlemeGuncelle
+AFTER INSERT ON KullaniciSarkiDinleme
 FOR EACH ROW
 BEGIN
-    -- Şarkının dinlenme sayısını 1 artır
-    UPDATE song
-    SET listen_count = listen_count + 1
-    WHERE song_id = NEW.song_id;
+    UPDATE Sarki
+    SET DinlenmeSayisi = DinlenmeSayisi + 1
+    WHERE SarkiID = NEW.SarkiID;
 END;
 //
 DELIMITER ;
+
 
 --2. Kullanıcı Albüm Dinlemesi Sırasında Kullanıcı Sayısını Güncelleme (AFTER INSERT Trigger)
 
 DELIMITER //
-CREATE TRIGGER update_album_listen_count
-AFTER INSERT ON user_album_listens
+CREATE TRIGGER AlbumDinlemeGuncelle
+AFTER INSERT ON KullaniciAlbumDinleme
 FOR EACH ROW
 BEGIN
-    -- Albümün dinlenme sayısını 1 artır
-    UPDATE album
-    SET listen_count = listen_count + 1
-    WHERE album_id = NEW.album_id;
-    
-    -- Albümün dinlendiği kullanıcı sayısını artır
-    UPDATE album
-    SET user_count = user_count + 1
-    WHERE album_id = NEW.album_id;
+    UPDATE Album
+    SET DinlenmeSayisi = DinlenmeSayisi + 1
+    WHERE AlbumID = NEW.AlbumID;
 END;
 //
 DELIMITER ;
+
 
 --3. Admin Aktivitesi Kaydını Güncelleme (BEFORE DELETE Trigger)
-
 DELIMITER //
-CREATE TRIGGER update_admin_activity_before_delete
-BEFORE DELETE ON admin
+CREATE TRIGGER AdminAktiviteSilmedenOnce
+BEFORE DELETE ON Yonetici
 FOR EACH ROW
 BEGIN
-    -- Admin silinmeden önce, adminin son aktivitesini güncelle
-    UPDATE admin_activity
-    SET last_active_date = NOW()
-    WHERE admin_id = OLD.admin_id;
+    UPDATE YoneticiAktivite
+    SET SonAktiviteTarihi = NOW()
+    WHERE YoneticiID = OLD.YoneticiID;
 END;
 //
 DELIMITER ;
+
 
 
 
