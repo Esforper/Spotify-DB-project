@@ -69,10 +69,8 @@ def playlist_detail(playlist_index):
 def create_playlist():
     if request.method == 'POST':
         playlist_name = request.form['playlistName']
-        playlist_description = request.form['playlistDescription'] #playlist açıklaması alınıyor.
-        # Bu bilgiler anlık olarak işe yaramıyor, daha sonra değiştirilerek silinecek.
+        playlist_description = request.form['playlistDescription']
         
-        # Yeni bir playlist oluşturuyoruz
         playlist_service.create_playlist(name=playlist_name, user_id=g.user['KullaniciID'])
         flash('Playlist başarıyla oluşturuldu!', 'success')
         return redirect(url_for('user.home'))
@@ -95,7 +93,7 @@ def delete_playlist(playlist_index):
 @user_bp.route('/delete_song_from_playlist/<int:playlist_index>/<int:song_id>', methods=['POST'])
 def delete_song_from_playlist(playlist_index, song_id):
     # Playlist'ten belirtilen şarkıyı çıkaralım
-    playlist_service.delete_song_from_playlist(playlist_id=playlist_index, song_id=song_id)  # Şarkıyı playlist'ten sil    flash('Şarkı playlist\'ten başarıyla silindi!', 'success')
+    playlist_service.delete_song_from_playlist(playlist_id=playlist_index, song_id=song_id)
     return redirect(url_for('user.playlist_detail', playlist_index=playlist_index))
 
 @user_bp.route('/search', methods=['GET', 'POST'])
