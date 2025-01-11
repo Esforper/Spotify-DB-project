@@ -11,8 +11,8 @@
         </div>
         <form action="/login" method="POST">
             <div class="form-group mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control bg-dark text-light" id="username" name="username" placeholder="Enter your username" autocomplete="username" required>
+                <label for="username" class="form-label">Email</label>
+                <input type="text" class="form-control bg-dark text-light" id="email" name="email" placeholder="Enter your email" autocomplete="email" required>
             </div>
             <div class="form-group mb-3">
                 <label for="password" class="form-label">Password</label>
@@ -21,9 +21,9 @@
             <div class="form-group mb-3">
                 <label for="role" class="form-label">Role</label>
                 <select class="form-select bg-dark text-light" id="role" name="role" required>
-                    <option value="Admin">Admin</option>
-                    <option value="User">User</option>
-                    <option value="Artist">Artist</option>
+                    <option value="Yönetici">Admin</option>
+                    <option value="Dinleyici">User</option>
+                    <option value="Sanatçı">Artist</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-success w-100" style="background-color: #1DB954; border: none; border-radius: 50px;">Log In</button>

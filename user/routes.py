@@ -6,7 +6,7 @@ from services.album_service import AlbumService
 from services.artist_service import ArtistService
 from flask_mysqldb import MySQL
 
-user_service_instance = UserService()
+user_service_instance = UserService(mysql=MySQL())
 playlist_service = PlaylistService(mysql=MySQL())
 song_service = SongService(mysql=MySQL())
 album_service = AlbumService(mysql=MySQL())

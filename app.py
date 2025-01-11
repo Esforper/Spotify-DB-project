@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from admin.routes import admin_bp
 from artist.routes import artist_bp
 from user.routes import user_bp
-from services import user_service
+from services.user_service import UserService  # Yeni UserService import #yeni
+# MySQL bağlantısını zaten app.py içinde tanımlamıştık
 from flask_mysqldb import MySQL
 from dotenv import load_dotenv
 import os
@@ -14,7 +15,7 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Secret key for sessions
 
-user_service = user_service.UserService()
+
 
 # MySQL configurations
 app.config['MYSQL_HOST'] = 'localhost'  # Change if using a different host
@@ -29,6 +30,8 @@ app.config['MYSQL'] = mysql
 app.register_blueprint(admin_bp, url_prefix='/admin')
 app.register_blueprint(artist_bp, url_prefix='/artist')
 app.register_blueprint(user_bp, url_prefix='/user')
+
+user_service = UserService(mysql=mysql)  # MySQL bağlantısını UserService'e geçiyoruz. yeni
 
 @app.route('/test-db')
 def test_db():
@@ -55,21 +58,32 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username'].strip()
+        email = request.form['email'].strip()    #normalde username olarak loginden alınıyor ama email olarak değiştirildi.
         password = request.form['password'].strip()
         role = request.form['role'].strip()
 
-        user = user_service.validate_user(username, password, role) #user service bağlantısı.
+
+        # login_role = role
+        # if role == "User":
+        #     login_role = "Dinleyici"
+        # elif role == "Artist":
+        #     login_role = "Sanatçı"
+        # elif role == "Admin":
+        #     login_role = "Yönetici"
+            
+        print("User bilgileri", email, password, role)
+        user = user_service.validate_user(email, password, role) #user service bağlantısı.
+        print("User bilgileri", user)
         if user:
                 session['logged_in'] = True
-                session['username'] = username
+                session['username'] = email
                 session['role'] = role
                 # Redirect based on role
-                if role == "Admin":
+                if role == "Yönetici":
                     return redirect(url_for('admin.dashboard'))
-                elif role == "User":
+                elif role == "Dinleyici":
                     return redirect(url_for('user.home'))
-                elif role == "Artist":
+                elif role == "Sanatçı":
                     return redirect(url_for('artist.profile'))
         return render_template('login.html', error="Invalid credentials or role")
     return render_template('login.html')
@@ -78,27 +92,37 @@ def login():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        username = request.form['username'].strip()
+        name = request.form['username'].strip()
+        email = request.form['email'].strip() 
         password = request.form['password'].strip()
         role = request.form['role'].strip()
 
-        # Check if user already exists in user_service
-        if user_service.get_user(username):
-            return render_template('signup.html', error="Username already exists")
+        # Kullanıcının zaten mevcut olup olmadığını kontrol et
+        if user_service.get_user(email, role):
+            return render_template('signup.html', error="Email already exists")
 
-        # Normally, you would add user to the database here, but for now, just mock it
-        user_service.users[username] = {"password": password, "role": role}
-        session['logged_in'] = True
-        session['username'] = username
-        session['role'] = role
+        # Kullanıcıyı kaydet
+        success = False
+        if role == "Yönetici":
+            success = user_service.create_admin(name, email, password)
+        else:
+            success = user_service.create_user(name, email, password, role)
 
-        # Redirect based on role
-        if role == "Admin":
-            return redirect(url_for('admin.dashboard'))
-        elif role == "User":
-            return redirect(url_for('user.home'))
-        elif role == "Artist":
-            return redirect(url_for('artist.profile'))
+
+        if success:
+            # Başarılı kayıt sonrası oturum aç
+            session['logged_in'] = True
+            session['username'] = email
+            session['role'] = role
+
+            # Rol bazlı yönlendirme
+            if role == "Yönetici":
+                return redirect(url_for('admin.dashboard'))
+            elif role == "Dinleyici":
+                return redirect(url_for('user.home'))
+            elif role == "Sanatçı":
+                return redirect(url_for('artist.profile'))
+        return render_template('signup.html', error="An error occurred during signup")
 
     return render_template('signup.html')
 
