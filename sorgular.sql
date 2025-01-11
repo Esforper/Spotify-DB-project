@@ -15,13 +15,14 @@ VALUES
 ('Mehmet Kaya', 'mehmet@example.com', '654321', '2024-11-10', 'Dinleyici'),
 ('Ayşe Çelik', 'ayse@example.com', '123654', '2024-10-01', 'Dinleyici'),
 ('Fatma Öztürk', 'fatma@example.com', '321456', '2024-09-15', 'Dinleyici'),
-('Ali Demir', 'ali@example.com', '654123', '2024-08-20', 'Dinleyici'),
-('Emir', 'emir@istun.edu.tr', 'emir123', '2025-01-01', 'Admin'),
-('Rumeysa', 'rumeysa@istun.edu.tr', 'rumeysa123', '2025-01-01', 'Admin'),
-('Ömer', 'omer@istun.edu.tr', 'omer123', '2025-01-01', 'Admin'),
-('Pınar', 'pinar@istun.edu.tr', 'pinar123', '2025-01-01', 'Admin'),
-('Melike', 'melike@istun.edu.tr', 'melike123', '2025-01-01', 'Admin');
+('Ali Demir', 'ali@example.com', '654123', '2024-08-20', 'Dinleyici');
 
+INSERT INTO Yonetici (Isim, Eposta, Sifre) VALUES
+('Emir', 'emir@istun.edu.tr', 'emir123'),
+('Rumeysa', 'rumeysa@istun.edu.tr', 'rumeysa123'),
+('Ömer', 'omer@istun.edu.tr', 'omer123'),
+('Pınar', 'pinar@istun.edu.tr', 'pinar123'),
+('Melike', 'melike@istun.edu.tr', 'melike123');
 
 
 -- Tür Ekleme

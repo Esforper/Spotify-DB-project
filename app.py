@@ -44,14 +44,24 @@ def test_db():
 # Home Route (redirects based on role)
 @app.route('/')
 def home():
-    if 'logged_in' in session:
+    # Oturum bilgisi kontrolü
+    if 'logged_in' in session and session['logged_in']:
+        email = session.get('email')
         role = session.get('role')
-        if role == 'Admin':
-            return redirect(url_for('admin.dashboard'))
-        elif role == 'User':
-            return redirect(url_for('user.home'))
-        elif role == 'Artist':
-            return redirect(url_for('artist.profile'))
+
+        # Kullanıcı bilgilerini doğrulamak için user_service kullan
+        user = user_service.get_user(email, role)  # user_service'den kullanıcıyı al
+        if user:
+            # Role göre yönlendirme yap
+            if role == 'Yonetici':
+                return redirect(url_for('admin.dashboard'))
+            elif role == 'Dinleyici':
+                return redirect(url_for('user.home'))
+            elif role == 'Sanatci':
+                return redirect(url_for('artist.profile'))
+
+    # Eğer kullanıcı yoksa veya oturum geçersizse, oturumu temizle ve login sayfasına yönlendir
+    session.clear()
     return redirect(url_for('login'))
 
 # Login Route
@@ -61,15 +71,6 @@ def login():
         email = request.form['email'].strip()    #normalde username olarak loginden alınıyor ama email olarak değiştirildi.
         password = request.form['password'].strip()
         role = request.form['role'].strip()
-
-
-        # login_role = role
-        # if role == "User":
-        #     login_role = "Dinleyici"
-        # elif role == "Artist":
-        #     login_role = "Sanatçı"
-        # elif role == "Admin":
-        #     login_role = "Yönetici"
             
         print("User bilgileri", email, password, role)
         user = user_service.validate_user(email, password, role) #user service bağlantısı.

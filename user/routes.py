@@ -16,7 +16,7 @@ user_bp = Blueprint('user', __name__, template_folder='templates')
 
 @user_bp.before_request
 def load_user():
-    if 'email' in session:
+    if 'email' in session and 'role' in session and 'logged_in' in session:
         user_email = session['email']
         user_role = session.get('role', None)
         user = user_service_instance.get_user(user_email, user_role)

@@ -1,5 +1,5 @@
--- CREATE DATABASE Spotify_DB_Project;
-USE spotify_db;
+CREATE DATABASE Spotify_DB_Project;
+USE Spotify_DB_Project;
 
 -- Kullanıcı Tablosu
 CREATE TABLE Kullanici (
