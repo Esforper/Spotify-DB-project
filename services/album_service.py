@@ -13,7 +13,7 @@ class AlbumService:
         return albums
 
     def get_album_by_id(self, album_id):
-        cur = self.mysql.connection.cursor()
+        cur = self.mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cur.execute("SELECT * FROM Album WHERE AlbumID = %s", (album_id,))
         album = cur.fetchone()
         cur.close()

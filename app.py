@@ -76,7 +76,7 @@ def login():
         print("User bilgileri", user)
         if user:
                 session['logged_in'] = True
-                session['username'] = email
+                session['email'] = email
                 session['role'] = role
                 # Redirect based on role
                 if role == "Yönetici":

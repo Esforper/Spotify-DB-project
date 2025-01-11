@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, g
 from services.user_service import UserService
 from services.playlist_service import PlaylistService
 from services.song_service import SongService
@@ -14,44 +14,25 @@ artist_service = ArtistService(mysql=MySQL())
 
 user_bp = Blueprint('user', __name__, template_folder='templates')
 
-"""
-# Localde playlistleri saklamak için bir liste
-Tur = [
-    {'TurID': 1, 'TurAdi': 'Pop', 'Aciklama': 'Popüler müzik'},
-    {'TurID': 2, 'TurAdi': 'Rock', 'Aciklama': 'Rock müzik'},
-]
-
-Album = [
-    {'AlbumID': 1, 'AlbumAdi': 'Favoriler', 'YayinTarihi': '2023-01-01', 'TurID': 1, 'SanatciID': 1},
-    {'AlbumID': 2, 'AlbumAdi': 'Rock Hits', 'YayinTarihi': '2023-05-10', 'TurID': 2, 'SanatciID': 2},
-]
-
-Sarki = [
-    {'SarkiID': 1, 'SarkiAdi': 'Şarkı 1', 'Sure': '00:03:45', 'YayinTarihi': '2023-01-10', 'TurID': 1, 'AlbumID': 1, 'SanatciID': 1},
-    {'SarkiID': 2, 'SarkiAdi': 'Şarkı 2', 'Sure': '00:04:10', 'YayinTarihi': '2023-01-15', 'TurID': 1, 'AlbumID': 1, 'SanatciID': 1},
-    {'SarkiID': 3, 'SarkiAdi': 'Rock Şarkı 1', 'Sure': '00:02:50', 'YayinTarihi': '2023-05-20', 'TurID': 2, 'AlbumID': 2, 'SanatciID': 2},
-    {'SarkiID': 4, 'SarkiAdi': 'Rock Şarkı 2', 'Sure': '00:03:15', 'YayinTarihi': '2023-05-25', 'TurID': 2, 'AlbumID': 2, 'SanatciID': 2},
-]
-CalmaListesi = [
-    {'CalmaListesiID': 1, 'CalmaListesiAdi': 'Hareketli Şarkılar', 'KullaniciID': 1},
-    {'CalmaListesiID': 2, 'CalmaListesiAdi': 'Yavaş Şarkılar', 'KullaniciID': 1},
-]
-CalmaListesi_Sarkilar = [
-    {'CalmaListesiSarkilarID': 1, 'CalmaListesiID': 1, 'SarkiID': 1},
-    {'CalmaListesiSarkilarID': 2, 'CalmaListesiID': 1, 'SarkiID': 3},
-    {'CalmaListesiSarkilarID': 3, 'CalmaListesiID': 2, 'SarkiID': 2},
-    {'CalmaListesiSarkilarID': 4, 'CalmaListesiID': 2, 'SarkiID': 4},
-]
-"""
-
+@user_bp.before_request
+def load_user():
+    if 'email' in session:
+        user_email = session['email']
+        user_role = session.get('role', None)
+        user = user_service_instance.get_user(user_email, user_role)
+        print("user bilgisi: ",user)
+        g.user = user
+        print("g.user bilgisi: ",g.user)
+        print("g bilgisi", g)
+    else:
+        g.user = None  # Eğer kullanıcı yoksa None atayın.
 
 @user_bp.route('/home')
 def home():
-    playlists = playlist_service.get_playlists(user_id=1)   #user serviceden bilgiler gelecek.
+
+    playlists = playlist_service.get_playlists(user_id=g.user['KullaniciID'])   #user serviceden bilgiler gelecek.
     print("session bilgisi: ",session)
     return render_template('user/home.html', title="User library" ,playlists=playlists)
-
-
 
 
 @user_bp.route('/playlist/<int:playlist_index>')
@@ -92,7 +73,7 @@ def create_playlist():
         # Bu bilgiler anlık olarak işe yaramıyor, daha sonra değiştirilerek silinecek.
         
         # Yeni bir playlist oluşturuyoruz
-        playlist_service.create_playlist(name=playlist_name, user_id=1)
+        playlist_service.create_playlist(name=playlist_name, user_id=g.user['KullaniciID'])
         flash('Playlist başarıyla oluşturuldu!', 'success')
         return redirect(url_for('user.home'))
     return render_template('user/create_playlist.html')
@@ -139,49 +120,49 @@ def search():
 @user_bp.route('/profile')
 def profile():
     # Kullanıcının giriş yapıp yapmadığını kontrol et
-    if 'logged_in' not in session or not session['logged_in']:
+    if not g.user:
         flash('Lütfen giriş yapın.', 'danger')
         return redirect(url_for('login'))
     
-    # Oturumdaki username'i al
-    username = session.get('username')
-    print(username)
-    
+    # Kullanıcı bilgilerini g.user üzerinden al
+    email = g.user['Eposta']  # Veya 'username' alanını kullanıyorsanız buna göre düzenleyin
+    user_id = g.user['KullaniciID']
+    role=g.user['Rol']
     # user_service üzerinden kullanıcı bilgilerini al
-    user = user_service_instance.get_user(username)
-
-    if not user:
-        flash('Kullanıcı bilgileri bulunamadı.', 'danger')
-        return redirect(url_for('login'))
+    user = user_service_instance.get_user(email, role)
         
-    user_id = 1  # Assuming user_id is hardcoded for now, this could be dynamic in a real app
+    user_id=g.user['KullaniciID']
     # Favori sanatçıları çek
     favorite_artists = artist_service.get_favorite_artists(user_id)
 
     # Kullanıcı bilgilerini şablona gönder
-    return render_template('user/profile.html', username=username, role=user['role'], favorite_artists=favorite_artists)
+    return render_template(
+    'user/profile.html',
+    username=user.get('Isim'),
+    email=g.user['Eposta'],
+    role=g.user['Rol'],
+    favorite_artists=favorite_artists
+)
+
 
 
 @user_bp.route('/album/<int:album_id>', methods=['GET', 'POST'])
 def album_detail(album_id):
     album = album_service.get_album_by_id(album_id)  # Albümü album_service üzerinden al
-
+    print("album kontrolü: ",album)
     if not album:
         flash('Albüm bulunamadı.', 'danger')
         return redirect(url_for('user.search'))
 
     # Albüme ait şarkılar
     songs = album_service.get_songs_by_album(album_id)
-    # Albüm yorumları
+
     comments = album_service.get_comments_by_album(album_id)
-    # Yorum ekleme işlemi
+
     if request.method == 'POST':
-        # if 'user_id' not in session:
-        #     flash('You need to log in to add a comment', 'danger')
-        #     return redirect(url_for('login'))
         content = request.form['comment']
-        # user_id = session['user_id']
-        user_id = 1  # Assuming user_id is hardcoded for now, this could be dynamic in a real app
+        
+        user_id=g.user['KullaniciID'] 
         if content.strip():
             album_service.add_comment_to_album(album_id, user_id, content)
             flash('Comment added successfully!', 'success')
@@ -218,7 +199,7 @@ def add_song_to_playlist(playlist_id, song_id):
 
 @user_bp.route('/add_favorite_song', methods=['POST'])
 def add_favorite_song():
-    user_id = 1  # Assuming user_id is hardcoded for now, this could be dynamic in a real app
+    user_id=g.user['KullaniciID']
     song_id = request.form.get('song_id')  # Get song ID from form data
 
     try:
@@ -227,25 +208,25 @@ def add_favorite_song():
     except Exception as e:
         flash(f'Hata: {e}', 'danger')
     
-    return redirect(url_for('user.profile'))  # Redirect to profile page or desired page
+    return redirect(url_for('user.home')) 
 
 
 @user_bp.route('/add_favorite_artist', methods=['POST'])
 def add_favorite_artist():
-    user_id = 1  # Assuming user_id is hardcoded for now, this could be dynamic in a real app
-    artist_id = request.form.get('artist_id')  # Get artist ID from form data
+    user_id=g.user['KullaniciID']
+    artist_id = request.form.get('artist_id') 
 
     try:
-        artist_service.add_favorite_artist(user_id, artist_id)  # Add artist to favorites
+        artist_service.add_favorite_artist(user_id, artist_id)  
         flash('Sanatçı başarıyla favorilere eklendi!', 'success')
     except Exception as e:
         flash(f'Hata: {e}', 'danger')
 
-    return redirect(url_for('user.profile'))  # Redirect to profile page or desired page
+    return redirect(url_for('user.profile')) 
 
 @user_bp.route('/favorite_songs' , methods=['GET'])
 def favorite_songs():
-    user_id = 1
+    user_id=g.user['KullaniciID']
     try:
         favorite_songs = song_service.get_favorite_songs(user_id)
         print("Log : favorite song - ",favorite_songs)
