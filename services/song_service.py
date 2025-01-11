@@ -69,37 +69,33 @@ class SongService:
 
 
     def get_songs_by_playlist(self, playlist_id):
-        """
-        Belirli bir çalma listesindeki şarkıları getirir.
-        """
-        cur = self.mysql.connection.cursor()
+        cur = self.mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cur.execute("""
             SELECT 
-                s.SarkiID, s.SarkiAdi, s.Sure, s.YayinTarihi, s.TurID, s.AlbumID, s.SanatciID
+                s.SarkiID, 
+                s.SarkiAdi,
+                s.Sure, 
+                s.YayinTarihi AS SarkiYayinTarihi, 
+                a.AlbumAdi, 
+                a.YayinTarihi AS AlbumYayinTarihi,
+                sanat.SanatciIsmi 
             FROM 
                 Sarki s
             JOIN 
                 CalmaListesi_Sarkilar cls ON s.SarkiID = cls.SarkiID
+            LEFT JOIN 
+                Album a ON s.AlbumID = a.AlbumID
+            LEFT JOIN 
+                Sanatci sanat ON s.SanatciID = sanat.SanatciID
             WHERE 
                 cls.CalmaListesiID = %s
         """, (playlist_id,))
-        rows = cur.fetchall()
+        songs = cur.fetchall()
+        print("song service içindeki kontrol", songs)
         cur.close()
-
-        # Veriyi dictionary formatına çevir
-        songs = [
-            {
-                "SarkiID": row[0],
-                "SarkiAdi": row[1],
-                "Sure": row[2],
-                "YayinTarihi": row[3],
-                "TurID": row[4],
-                "AlbumID": row[5],
-                "SanatciID": row[6],
-            }
-            for row in rows
-        ]
         return songs
+
+
 
 
     

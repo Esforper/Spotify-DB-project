@@ -67,7 +67,8 @@ def playlist_detail(playlist_index):
 
         # Çalma listesindeki şarkıları alın
         playlist_songs = song_service.get_songs_by_playlist(playlist_index)
-
+        print("playlist kontrolu: ",playlist_songs)
+        
         return render_template(
             'user/playlist_detail.html',
             playlist=playlist,

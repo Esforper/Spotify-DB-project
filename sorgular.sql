@@ -1,11 +1,23 @@
 -- Kullanıcı Ekleme
 INSERT INTO Kullanici (Isim, Eposta, Sifre, UyelikTarihi, Rol)
 VALUES 
+('Tarkan', 'tarkan@example.com', 'tarkan123', '2024-07-01', 'Sanatçı'),
+('Sezen Aksu', 'sezen@example.com', 'sezen123', '2024-06-15', 'Sanatçı'),
+('Cem Karaca', 'cem@example.com', 'cem123', '2024-05-10', 'Sanatçı'),
+('Barış Manço', 'baris@example.com', 'baris123', '2024-04-20', 'Sanatçı'),
+('Ajda Pekkan', 'ajda@example.com', 'ajda123', '2024-03-05', 'Sanatçı'),
+('Teoman', 'teoman@example.com', 'teoman123', '2024-02-25', 'Sanatçı'),
+('Ceza', 'ceza@example.com', 'ceza123', '2024-01-30', 'Sanatçı'),
+('Zeki Müren', 'zeki@example.com', 'zeki123', '2023-12-15', 'Sanatçı'),
+('Edis', 'edis@example.com', 'edis123', '2023-11-10', 'Sanatçı'),
+('Gülşen', 'gulsen@example.com', 'gulsen123', '2023-10-05', 'Sanatçı'),
 ('Ahmet Yılmaz', 'ahmet@example.com', '123456', '2024-12-12', 'Dinleyici'),
 ('Mehmet Kaya', 'mehmet@example.com', '654321', '2024-11-10', 'Dinleyici'),
 ('Ayşe Çelik', 'ayse@example.com', '123654', '2024-10-01', 'Dinleyici'),
 ('Fatma Öztürk', 'fatma@example.com', '321456', '2024-09-15', 'Dinleyici'),
 ('Ali Demir', 'ali@example.com', '654123', '2024-08-20', 'Dinleyici');
+
+
 
 -- Tür Ekleme
 INSERT INTO Tur (TurAdi, Aciklama) 
@@ -248,11 +260,6 @@ SELECT Kullanici.Isim AS KullaniciAdi, CalmaListesi.CalmaListesiAdi
 FROM Kullanici
 JOIN CalmaListesi ON Kullanici.KullaniciID = CalmaListesi.KullaniciID;
 
--- bir albümdeki şarkıları listele
-SELECT Sarki.SarkiAdi, Sarki.Sure
-FROM Sarki
-WHERE Sarki.SarkiID = 1;
-
 -- bir kullanıcının favori şarkılarını listele
 SELECT Sarki.SarkiAdi
 FROM FavoriSarkilar
@@ -284,6 +291,21 @@ FROM Takip
 JOIN Sanatci ON Takip.TakipEdilenSanatciID = Sanatci.SanatciID
 WHERE Takip.TakipEdenKullaniciID = 1;
 
+-- Bir şarkının bulunduğu albüm ve bu albümde yer alan sanatçıyı listele
+SELECT Sarki.SarkiAdi AS SarkiAdi, Album.AlbumAdi AS AlbumAdi, Sanatci.SanatciIsmi AS SanatciAdi
+FROM Sarki
+JOIN Album ON Sarki.AlbumID = Album.AlbumID
+JOIN Sanatci ON Album.SanatciID = Sanatci.SanatciID
+WHERE Sarki.SarkiID = 1;
+
+
+
+
+-- bir albümdeki şarkıları listele
+SELECT Sarki.SarkiAdi, Sarki.Sure
+FROM Sarki
+WHERE Sarki.SarkiID = 1;
+
 --  kullanıcı ismini güncelle
 UPDATE Kullanici
 SET Isim = 'Mehmet Yılmaz'
@@ -309,6 +331,241 @@ DELETE FROM SarkiYorumlari
 WHERE YorumID = 1;
 
 
+DELIMITER $$
+
+-- Kullanıcı Ekleme Saklı Yordamı
+CREATE PROCEDURE EkleKullanici (
+    IN p_Isim VARCHAR(100),
+    IN p_Eposta VARCHAR(100),
+    IN p_Sifre VARCHAR(100),
+    IN p_UyelikTarihi DATE,
+    IN p_Rol VARCHAR(50)
+)
+BEGIN
+    INSERT INTO Kullanici (Isim, Eposta, Sifre, UyelikTarihi, Rol)
+    VALUES (p_Isim, p_Eposta, p_Sifre, p_UyelikTarihi, p_Rol);
+END $$
+
+DELIMITER ;
+
+-- Kullanıcı Ekleme Saklı Yordamını Çağırma
+CALL EkleKullanici('Ahmet Yılmaz2', 'ahmet2@example.com', '123456', '2024-12-12', 'Dinleyici');
+CALL EkleKullanici('Mehmet Kaya2', 'mehmet2@example.com', '654321', '2024-11-10', 'Dinleyici');
+-- Diğer kullanıcı ekleme işlemleri...
+
+
+
+DELIMITER $$
+
+-- Tür Ekleme Saklı Yordamı
+CREATE PROCEDURE EkleTur (
+    IN p_TurAdi VARCHAR(100),
+    IN p_Aciklama TEXT
+)
+BEGIN
+    INSERT INTO Tur (TurAdi, Aciklama)
+    VALUES (p_TurAdi, p_Aciklama);
+END $$
+
+DELIMITER ;
+
+-- Tür Ekleme Saklı Yordamını Çağırma
+CALL EkleTur('Pop', 'Pop müzik türü');
+CALL EkleTur('Rock', 'Rock müzik türü');
+-- Diğer tür ekleme işlemleri...
+
+-- Kullanıcı Ekleme
+CALL EkleKullanici('Ahmet Yılmaz', 'ahmet@example.com', '123456', '2024-12-12', 'Dinleyici');
+CALL EkleKullanici('Mehmet Kaya', 'mehmet@example.com', '654321', '2024-11-10', 'Dinleyici');
+CALL EkleKullanici('Ayşe Çelik', 'ayse@example.com', '123654', '2024-10-01', 'Dinleyici');
+-- Diğer kullanıcı ekleme işlemleri...
+
+-- Tür Ekleme
+CALL EkleTur('Pop', 'Pop müzik türü');
+CALL EkleTur('Rock', 'Rock müzik türü');
+CALL EkleTur('Türk Sanat Müziği', 'Geleneksel Türk müziği');
+-- Diğer tür ekleme işlemleri...
+
+-- Sanatçı Ekleme
+CALL Sanatci(1, 'Tarkan', 'Türk pop müziğinin megastarı.');
+CALL Sanatci(2, 'Sezen Aksu', 'Minik Serçe lakaplı ünlü sanatçı.');
+CALL Sanatci(3, 'Cem Karaca', 'Türk rock müziğinin öncülerinden.');
+-- Diğer sanatçı ekleme işlemleri...
+
+-- Albüm Ekleme
+CALL Album('Ölürüm Sana', '1997-05-15', 1, 1);
+CALL Album('Kuzu Kuzu', '2001-05-25', 1, 1);
+-- Diğer albüm ekleme işlemleri...
+
+-- 1. Kullanıcıların Dinlediği Albümler ve Şarkı Sayıları
+SELECT k.KullaniciID, a.AlbumAdi, COUNT(s.SarkiID) AS SarkiSayisi
+FROM Kullanici k
+JOIN CalmaListesi_Sarkilar cls ON k.KullaniciID = cls.CalmaListesiID
+JOIN Sarki s ON cls.SarkiID = s.SarkiID
+JOIN Album a ON s.AlbumID = a.AlbumID
+GROUP BY k.KullaniciID, a.AlbumAdi;
+
+
+-- 2. Sanatçılar ve Albümleri
+SELECT s.SanatciIsmi, a.AlbumAdi
+FROM Sanatci s
+JOIN Album a ON s.SanatciID = a.SanatciID
+ORDER BY s.SanatciIsmi;
+
+
+-- 3. Kullanıcıların Dinlediği Şarkıların Albüm ve Sanatçı Bilgisi
+SELECT k.KullaniciID, s.SarkiAdi, a.AlbumAdi, sa.SanatciIsmi
+FROM Kullanici k
+JOIN CalmaListesi_Sarkilar cls ON k.KullaniciID = cls.CalmaListesiID
+JOIN Sarki s ON cls.SarkiID = s.SarkiID
+JOIN Album a ON s.AlbumID = a.AlbumID
+JOIN Sanatci sa ON a.SanatciID = sa.SanatciID
+ORDER BY k.KullaniciID;
+
+
+-- 4. Albüm Türüne Göre Kullanıcı Dinlemeleri
+SELECT t.TurAdi, k.KullaniciID, COUNT(a.AlbumID) AS AlbumDinlemeSayisi
+FROM Album a
+JOIN Tur t ON a.TurID = t.TurID
+JOIN CalmaListesi_Sarkilar cls ON a.AlbumID = cls.CalmaListesiID
+JOIN Kullanici k ON cls.CalmaListesiID = k.KullaniciID
+GROUP BY t.TurAdi, k.KullaniciID;
+
+
+-- 5. Sanatçılar ve En Çok Dinlenen Albümleri
+SELECT sa.SanatciIsmi, a.AlbumAdi, MAX(cls.CalmaListesiID) AS MaxDinleme
+FROM Sanatci sa
+JOIN Album a ON sa.SanatciID = a.SanatciID
+JOIN CalmaListesi_Sarkilar cls ON a.AlbumID = cls.CalmaListesiID
+GROUP BY sa.SanatciIsmi, a.AlbumAdi
+ORDER BY MaxDinleme DESC;
+
+
+-- 6. Albümler ve Dinlenme Sayısı
+SELECT a.AlbumAdi, COUNT(cls.CalmaListesiID) AS ToplamDinleme
+FROM Album a
+JOIN CalmaListesi_Sarkilar cls ON a.AlbumID = cls.CalmaListesiID
+GROUP BY a.AlbumAdi
+ORDER BY ToplamDinleme DESC;
+
+
+-- 7. Kullanıcıların Dinlediği Albüm Sayıları ve Türleri
+SELECT k.KullaniciID, t.TurAdi, COUNT(DISTINCT a.AlbumID) AS AlbumSayisi
+FROM Kullanici k
+JOIN CalmaListesi_Sarkilar cls ON k.KullaniciID = cls.CalmaListesiID
+JOIN Album a ON cls.CalmaListesiID = a.AlbumID
+JOIN Tur t ON a.TurID = t.TurID
+GROUP BY k.KullaniciID, t.TurAdi;
+
+
+-- 8. Sanatçılar ve Albümleri Arasındaki Ortak Dinlemeler
+SELECT sa.SanatciIsmi, a.AlbumAdi, COUNT(cls.CalmaListesiID) AS OrtakDinleme
+FROM Sanatci sa
+JOIN Album a ON sa.SanatciID = a.SanatciID
+JOIN CalmaListesi_Sarkilar cls ON a.AlbumID = cls.CalmaListesiID
+GROUP BY sa.SanatciIsmi, a.AlbumAdi
+HAVING OrtakDinleme > 5
+ORDER BY OrtakDinleme DESC;
+
+
+-- 9. Adminlerin Yaptığı Aktivite Türleri
+SELECT DISTINCT y.YoneticiID, 'login' AS AktiviteTuru
+FROM Yonetici y
+ORDER BY y.YoneticiID;
+
+
+-- 10. Şarkı ve Albüm Bilgileri
+SELECT s.SarkiAdi, a.AlbumAdi
+FROM Sarki s
+JOIN Album a ON s.AlbumID = a.AlbumID
+ORDER BY s.SarkiAdi;
+
+
+-- 11. Kullanıcıların Dinledikleri Albüm ve Sanatçılar
+SELECT k.KullaniciID, a.AlbumAdi, sa.SanatciIsmi
+FROM Kullanici k
+JOIN KullaniciAlbumDinleme ua ON k.KullaniciID = ua.KullaniciID
+JOIN Album a ON ua.AlbumID = a.AlbumID
+JOIN Sanatci sa ON a.SanatciID = sa.SanatciID
+ORDER BY k.KullaniciID;
+
+
+-- 12. Albümlerin Yayın Yılına Göre Kullanıcı Dinlemeleri
+SELECT a.YayinTarihi AS YayinYili, k.KullaniciID, COUNT(ua.AlbumID) AS DinlenmeSayisi
+FROM Album a
+JOIN KullaniciAlbumDinleme ua ON a.AlbumID = ua.AlbumID
+JOIN Kullanici k ON ua.KullaniciID = k.KullaniciID
+GROUP BY a.YayinTarihi, k.KullaniciID
+ORDER BY a.YayinTarihi, DinlenmeSayisi DESC;
+
+-- 13. Kullanıcıların Dinledikleri Albümler ve Şarkılar
+SELECT k.KullaniciID, a.AlbumAdi, s.SarkiAdi
+FROM Kullanici k
+JOIN KullaniciSarkiDinleme us ON k.KullaniciID = us.KullaniciID
+JOIN Sarki s ON us.SarkiID = s.SarkiID
+JOIN Album a ON s.AlbumID = a.AlbumID
+ORDER BY k.KullaniciID;
+
+
+-- 14. Sanatçılar ve En Çok Dinlenen Şarkıları
+SELECT sa.SanatciIsmi, s.SarkiAdi, COUNT(us.KullaniciID) AS ToplamDinlenme
+FROM Sanatci sa
+JOIN Album a ON sa.SanatciID = a.SanatciID
+JOIN Sarki s ON a.AlbumID = s.AlbumID
+JOIN KullaniciSarkiDinleme us ON s.SarkiID = us.SarkiID
+GROUP BY sa.SanatciIsmi, s.SarkiAdi
+ORDER BY ToplamDinlenme DESC;
+
+
+-- 15. Albüm Türüne Göre Toplam Dinlenme Sayısı
+SELECT t.TurAdi, SUM(a.DinlenmeSayisi) AS ToplamDinlenme
+FROM Album a
+JOIN Tur t ON a.TurID = t.TurID
+GROUP BY t.TurAdi;
+
+
+
+--1. Şarkı Dinlendiğinde Dinlenme Sayısını Güncelleme (AFTER INSERT Trigger)
+DELIMITER //
+CREATE TRIGGER SarkiDinlemeGuncelle
+AFTER INSERT ON KullaniciSarkiDinleme
+FOR EACH ROW
+BEGIN
+    UPDATE Sarki
+    SET DinlenmeSayisi = DinlenmeSayisi + 1
+    WHERE SarkiID = NEW.SarkiID;
+END;
+//
+DELIMITER ;
+
+
+--2. Kullanıcı Albüm Dinlemesi Sırasında Kullanıcı Sayısını Güncelleme (AFTER INSERT Trigger)
+
+DELIMITER //
+CREATE TRIGGER AlbumDinlemeGuncelle
+AFTER INSERT ON KullaniciAlbumDinleme
+FOR EACH ROW
+BEGIN
+    UPDATE Album
+    SET DinlenmeSayisi = DinlenmeSayisi + 1
+    WHERE AlbumID = NEW.AlbumID;
+END;
+//
+DELIMITER ;
+
+
+--3. Admin Aktivitesi Kaydını Güncelleme (BEFORE DELETE Trigger)
+DELIMITER //
+CREATE TRIGGER AdminAktiviteSilmedenOnce
+BEFORE DELETE ON Yonetici
+FOR EACH ROW
+BEGIN
+    UPDATE YoneticiAktivite
+    SET SonAktiviteTarihi = NOW()
+    WHERE YoneticiID = OLD.YoneticiID;
+END;
+//
+DELIMITER ;
 
 
 
