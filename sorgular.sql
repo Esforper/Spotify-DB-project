@@ -15,7 +15,12 @@ VALUES
 ('Mehmet Kaya', 'mehmet@example.com', '654321', '2024-11-10', 'Dinleyici'),
 ('Ayşe Çelik', 'ayse@example.com', '123654', '2024-10-01', 'Dinleyici'),
 ('Fatma Öztürk', 'fatma@example.com', '321456', '2024-09-15', 'Dinleyici'),
-('Ali Demir', 'ali@example.com', '654123', '2024-08-20', 'Dinleyici');
+('Ali Demir', 'ali@example.com', '654123', '2024-08-20', 'Dinleyici'),
+('Emir', 'emir@istun.edu.tr', 'emir123', '2025-01-01', 'Admin'),
+('Rumeysa', 'rumeysa@istun.edu.tr', 'rumeysa123', '2025-01-01', 'Admin'),
+('Ömer', 'omer@istun.edu.tr', 'omer123', '2025-01-01', 'Admin'),
+('Pınar', 'pinar@istun.edu.tr', 'pinar123', '2025-01-01', 'Admin'),
+('Melike', 'melike@istun.edu.tr', 'melike123', '2025-01-01', 'Admin');
 
 
 
@@ -226,34 +231,68 @@ VALUES
 ('Bir İhtimal Biliyorum','2008-11-01', 1, 10);
 
 
--- çalma listesi ekleme
+-- Çalma listesi ekleme
 INSERT INTO CalmaListesi (CalmaListesiAdi, KullaniciID)
-VALUES ('Sabah Enerjisi', 1);
+VALUES 
+('Sabah Enerjisi', 1),
+('Çalışma Şarkıları', 2),
+('Rahatlama', 3),
+('En Sevilenler', 4),
+('Yol Şarkıları', 5);
 
--- çalma listesine şarkı ekleme
+-- Çalma listesine şarkı ekleme
 INSERT INTO CalmaListesi_Sarkilar (CalmaListesiID, SarkiID)
-VALUES (1, 1);
+VALUES 
+(1, 1),
+(1, 2),
+(2, 3),
+(3, 4),
+(4, 5);
 
-
--- şarkıya yorum ekleme
+-- Şarkıya yorum ekleme
 INSERT INTO SarkiYorumlari (KullaniciID, SarkiID, Icerik, YorumTarihi)
-VALUES (1, 1, 'Harika bir şarkı!', '2023-12-13');
+VALUES 
+(1, 1, 'Harika bir şarkı!', '2023-12-13'),
+(2, 2, 'Bu şarkıyı çok beğendim.', '2023-12-14'),
+(3, 3, 'Ruh halimi yansıtıyor.', '2023-12-15'),
+(4, 4, 'Klip de mükemmeldi!', '2023-12-16'),
+(5, 5, 'Sözleri gerçekten anlamlı.', '2023-12-17');
 
--- albüme yorum ekleme
+-- Albüme yorum ekleme
 INSERT INTO AlbumYorumlari (KullaniciID, AlbumID, Icerik, YorumTarihi)
-VALUES (1, 1, 'Bu albümü çok sevdim!', '2023-12-13');
+VALUES 
+(1, 1, 'Bu albümü çok sevdim!', '2023-12-13'),
+(2, 2, 'Harika bir albüm.', '2023-12-14'),
+(3, 3, 'Bu albümün her şarkısı güzel.', '2023-12-15'),
+(4, 4, 'Dinlemekten keyif alıyorum.', '2023-12-16'),
+(5, 5, 'Tek kelimeyle mükemmel!', '2023-12-17');
 
--- favorilere şarkı ekleme
+-- Favorilere şarkı ekleme
 INSERT INTO FavoriSarkilar (KullaniciID, SarkiID)
-VALUES (1, 1);
+VALUES 
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5);
 
--- favorilere sanatçı ekleme
+-- Favorilere sanatçı ekleme
 INSERT INTO FavoriSanatcilar (KullaniciID, SanatciID)
-VALUES (1, 1);
+VALUES 
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5);
 
--- takip etme
+-- Takip etme
 INSERT INTO Takip (TakipEdenKullaniciID, TakipEdilenSanatciID)
-VALUES (1, 1);
+VALUES 
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5);
 
 -- kullanıcıların tüm çalma listelerini görüntüle
 SELECT Kullanici.Isim AS KullaniciAdi, CalmaListesi.CalmaListesiAdi
