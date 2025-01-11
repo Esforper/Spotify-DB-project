@@ -48,7 +48,9 @@ CalmaListesi_Sarkilar = [
 @user_bp.route('/home')
 def home():
     playlists = playlist_service.get_playlists(user_id=1)   #user serviceden bilgiler gelecek.
+    print("session bilgisi: ",session)
     return render_template('user/home.html', title="User library" ,playlists=playlists)
+
 
 
 

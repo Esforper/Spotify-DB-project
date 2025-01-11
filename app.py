@@ -112,7 +112,8 @@ def signup():
         if success:
             # Başarılı kayıt sonrası oturum aç
             session['logged_in'] = True
-            session['username'] = email
+            session['username'] = name
+            session['email'] = email
             session['role'] = role
 
             # Rol bazlı yönlendirme
