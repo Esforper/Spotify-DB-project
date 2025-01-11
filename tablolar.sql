@@ -136,3 +136,29 @@ CREATE TABLE AlbumYorumlari (
     FOREIGN KEY (KullaniciID) REFERENCES Kullanici(KullaniciID),
     FOREIGN KEY (AlbumID) REFERENCES Album(AlbumID)
 ); 
+
+
+-- DeletedUsersLog Tablosu
+CREATE TABLE IF NOT EXISTS DeletedUsersLog (
+    LogID INT PRIMARY KEY AUTO_INCREMENT,
+    KullaniciID INT NOT NULL,
+    Isim VARCHAR(100) NOT NULL,
+    Eposta VARCHAR(100) NOT NULL,
+    Rol ENUM('Dinleyici', 'Sanatçı') NOT NULL,
+    DeletedAt DATETIME NOT NULL,
+    FOREIGN KEY (KullaniciID) REFERENCES Kullanici(KullaniciID)
+);
+
+
+-- Trigger to log deleted users into KullaniciDeletedLog
+DELIMITER $$
+CREATE TRIGGER after_kullanici_delete 
+AFTER DELETE ON Kullanici
+FOR EACH ROW 
+BEGIN
+    INSERT INTO KullaniciDeletedLog (KullaniciID, Isim, Eposta, Rol)
+    VALUES (OLD.KullaniciID, OLD.Isim, OLD.Eposta, OLD.Rol);
+END$$
+DELIMITER ;
+
+

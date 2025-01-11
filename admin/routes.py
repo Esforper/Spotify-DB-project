@@ -71,6 +71,7 @@ def add_role():
     return render_template('admin/add_role.html', title="Add Role")
 
 
+
 # 🗑️ Admin Delete Role
 @admin_bp.route('/delete-role', methods=['GET', 'POST'])
 def delete_role():
@@ -92,12 +93,52 @@ def delete_role():
             cur.execute(sql, (username, email, role))
             current_app.config['MYSQL'].connection.commit()
             cur.close()
-            
-            flash(f"User '{username}' with role '{role}' has been deleted.", "success")
+
+            flash(f"User '{username}' with role '{role}' has been deleted. The action has been logged.", "success")
         except Exception as e:
             flash(f"Error: {e}", "danger")
             return redirect(url_for('admin.delete_role'))
-        
+
         return redirect(url_for('admin.delete_role'))
-    
+
     return render_template('admin/delete_role.html', title="Delete Role")
+
+
+# Tüm Kullanıcıları Göster
+@admin_bp.route('/users', methods=['GET'])
+def users():
+    try:
+        cur = current_app.config['MYSQL'].connection.cursor()
+        sql = """
+            SELECT KullaniciID, Isim, Eposta, Rol, UyelikTarihi 
+            FROM Kullanici
+            ORDER BY UyelikTarihi DESC;
+        """
+        cur.execute(sql)
+        users = cur.fetchall()
+        cur.close()
+        return render_template('admin/all_users.html', users=users, title="All Users")
+    except Exception as e:
+        flash(f"Error fetching users: {e}", "danger")
+        return redirect(url_for('admin.dashboard'))
+
+
+# Silinen Kullanıcılar Logunu Göster
+@admin_bp.route('/deleted-users-log', methods=['GET'])
+def deleted_users_log():
+    try:
+        cur = current_app.config['MYSQL'].connection.cursor()
+        sql = """
+            SELECT * 
+            FROM DeletedUsersLog
+            ORDER BY DeletedAt DESC;
+        """
+        cur.execute(sql)
+        deleted_users = cur.fetchall()
+        cur.close()
+        return render_template('admin/deleted_users_log.html', deleted_users=deleted_users, title="Deleted Users Log")
+    except Exception as e:
+        flash(f"Error fetching deleted users log: {e}", "danger")
+        return redirect(url_for('admin.dashboard'))
+
+
